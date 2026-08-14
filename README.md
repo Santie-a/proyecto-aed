@@ -8,7 +8,6 @@ Aproximadamente 504.000 registros y 81 variables.
 ## Requisitos
 
 - R (versión reciente) y [RStudio](https://posit.co/download/rstudio-desktop/)
-- [Rtools](https://cran.r-project.org/bin/windows/Rtools/) — solo Windows, la versión debe coincidir con la de R
 - Git
 - ~1.5 GB libres en disco y conexión estable para la descarga inicial
 
@@ -36,8 +35,8 @@ tardar varios minutos la primera vez.
 Solo se ejecuta una vez. Los datos **no** están en el repositorio.
 
 ```r
-source(here::here("R", "00_download.R"))    # descarga el CSV (~500 MB)
-source(here::here("R", "01_to_parquet.R"))  # convierte a Parquet (~50-80 MB)
+source(here::here("R", "download.R"))    # descarga el CSV (~500 MB)
+source(here::here("R", "to_parquet.R"))  # convierte a Parquet (~50-80 MB)
 ```
 
 Ambos scripts son idempotentes: si el archivo ya existe, no lo vuelven a generar.
@@ -50,25 +49,6 @@ source(here::here("R", "example.r"))
 
 Imprime en consola las dimensiones del dataset, el esquema de columnas, un
 `head()` y dos consultas agregadas de ejemplo.
-
-## Estructura
-
-```
-├── README.md
-├── proyecto.Rproj
-├── renv.lock              # entorno de paquetes (versionado)
-├── R/
-│   ├── 00_download.R      # ingesta desde la API de datos.gov.co
-│   ├── 01_to_parquet.R    # CSV -> Parquet vía DuckDB
-│   └── example.r          # ejemplo de lectura y consultas
-├── data/                  # IGNORADO POR GIT
-│   ├── raw/
-│   │   ├── saber11_2020_2.csv
-│   │   └── MANIFEST.txt   # url, fecha y hash MD5 (versionado)
-│   └── processed/
-│       └── saber11_2020_2.parquet
-└── reports/
-```
 
 ## Convenciones
 
@@ -85,8 +65,8 @@ Imprime en consola las dimensiones del dataset, el esquema de columnas, un
 
 | Síntoma | Causa | Solución |
 |---|---|---|
-| `No se encontró el Parquet` | Falta la preparación de datos | Ejecuta `00_download.R` y `01_to_parquet.R` |
+| `No se encontró el Parquet` | Falta la preparación de datos | Ejecuta `download.R` y `to_parquet.R` |
 | `there is no package called ...` | Entorno no restaurado | `renv::restore()` |
 | Rutas rotas o `file not found` | Sesión abierta fuera del proyecto | Cierra R y abre el `.Rproj` |
-| Descarga interrumpida | Conexión inestable | Vuelve a ejecutar `00_download.R`; reanuda desde donde quedó |
+| Descarga interrumpida | Conexión inestable | Vuelve a ejecutar `download.R`; reanuda desde donde quedó |
 | Tildes mal mostradas | Encoding | Tools → Global Options → Code → Saving → UTF-8 |
