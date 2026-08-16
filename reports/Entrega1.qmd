@@ -44,9 +44,6 @@ Para dar solución a la pregunta de investigación y a los objetivos se usarán 
 
 dataset <- ds |>
   select(
-    # Llave de agregación (no es variable de estudio)
-    COLE_COD_DANE_SEDE,
-
     # Demográficas
     ESTU_GENERO,
     ESTU_FECHANACIMIENTO,
