@@ -243,6 +243,7 @@ Usando los datos obtenidos en la consulta de niveles, procedemos a recodificar y
 #| label: recodificacion
 #| message: false
 #| cache: true
+#| code-fold: true
 
 dataset <- dataset |>
   mutate(
