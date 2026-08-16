@@ -1,5 +1,5 @@
 # ==============================================================================
-# 10_explorar_dataset.R
+# explorar_dataset.R
 #
 # Ejemplo mínimo de lectura y consulta del dataset Saber 11 2020-2.
 #
@@ -20,7 +20,7 @@ ruta_pq <- here::here("data", "processed", "saber11_2020_2.parquet")
 if (!file.exists(ruta_pq)) {
   stop(
     "No se encontro el Parquet en:\n  ", ruta_pq,
-    "\nEjecuta primero 00_download.R y luego 01_to_parquet.R",
+    "\nESe debe descargar la base de datos primero con download.R y luego procesarla con to_parquet.R",
     call. = FALSE
   )
 }

@@ -1,0 +1,403 @@
+---
+title: "Preparación base de datos Saber 11 2020-2."
+author: "David Libreros, Mateo Puente, Nicolás González, Santiago Díaz"
+date: today
+lang: es
+format:
+  html:
+    toc: true
+    toc-location: left
+    code-fold: false
+    embed-resources: true
+execute:
+  freeze: auto
+  warning: false
+---
+
+# Librerías utilizadas
+Para el desarrollo del proyecto vamos a usar las siguientes librerías:
+```{r, warning=FALSE}
+#| output: false
+
+library(here)
+library(arrow)
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(lubridate)
+```
+
+# Cargar la base de datos
+Se usa parquet con el fin de reducir el uso de memoria (~500MB -> ~25MB).
+```{r}
+#| label: setup
+#| message: false
+
+ds <- arrow::open_dataset(here::here("data", "processed", "saber11_2020_2.parquet"))
+```
+
+# Selección de las columnas
+Para dar solución a la pregunta de investigación y a los objetivos se usarán las siguientes columnas:
+
+```{r}
+#| code-fold: true
+
+dataset <- ds |>
+  select(
+    # Llave de agregación (no es variable de estudio)
+    COLE_COD_DANE_SEDE,
+
+    # Demográficas
+    ESTU_GENERO,
+    ESTU_FECHANACIMIENTO,
+    ESTU_TIENEETNIA,
+
+    # Hábitos y dedicación
+    ESTU_DEDICACIONLECTURADIARIA,
+    ESTU_DEDICACIONINTERNET,
+    ESTU_HORASSEMANATRABAJA,
+
+    # Condiciones del hogar
+    FAMI_ESTRATOVIVIENDA,
+    FAMI_PERSONASHOGAR,
+    FAMI_CUARTOSHOGAR,
+    FAMI_SITUACIONECONOMICA,
+
+    # Capital educativo y ocupacional
+    FAMI_EDUCACIONPADRE,
+    FAMI_EDUCACIONMADRE,
+    FAMI_TRABAJOLABORPADRE,
+    FAMI_TRABAJOLABORMADRE,
+    FAMI_NUMLIBROS,
+
+    # Bienes y acceso tecnológico
+    FAMI_TIENEINTERNET,
+    FAMI_TIENECOMPUTADOR,
+    FAMI_TIENEAUTOMOVIL,
+    FAMI_TIENEMOTOCICLETA,
+    FAMI_TIENELAVADORA,
+    FAMI_TIENEHORNOMICROOGAS,
+    FAMI_TIENECONSOLAVIDEOJUEGOS,
+
+    # Seguridad alimentaria
+    FAMI_COMELECHEDERIVADOS,
+    FAMI_COMECARNEPESCADOHUEVO,
+    FAMI_COMECEREALFRUTOSLEGUMBRE,
+
+    # Establecimiento
+    COLE_NATURALEZA,
+    COLE_CALENDARIO,
+    COLE_GENERO,
+    COLE_BILINGUE,
+    COLE_JORNADA,
+    COLE_AREA_UBICACION,
+    COLE_DEPTO_UBICACION,
+
+    # Índices de referencia
+    ESTU_INSE_INDIVIDUAL,
+    ESTU_NSE_ESTABLECIMIENTO,
+
+    # Desempeño
+    PUNT_LECTURA_CRITICA,
+    PUNT_MATEMATICAS,
+    PUNT_C_NATURALES,
+    PUNT_SOCIALES_CIUDADANAS,
+    PUNT_INGLES,
+    PUNT_GLOBAL,
+
+    # Criterio de filtro
+    ESTU_ESTADOINVESTIGACION
+  ) |>
+  collect()
+
+dim(dataset)
+```
+
+# Revisión y eliminación de datos faltantes o inválidos
+Con el fin de garantizar la calidad de la información, se realiza exploración sobre cierto tipo de registros como no válidos, duplicados o faltantes y se realizan filtros dependiendo de los resultados
+
+## Verificacion de registros no válidos
+empezamos revisando los registros validados por el ICFES, es decir, que no esten marcados con VALIDEZ OFICINA JURIDICA, porque son registros que en su momento estuvieron bajo investigación. Es una procedimiento más sobre rigor que por su efecto al ser una base de datos grande.
+
+```{r}
+#| label: filtro-poblacional
+
+table(dataset$ESTU_ESTADOINVESTIGACION, useNA = "ifany")
+
+dataset <- dataset |>
+  filter(ESTU_ESTADOINVESTIGACION == "PUBLICAR") |>
+  select(-ESTU_ESTADOINVESTIGACION)
+
+nrow(dataset)
+```
+## Verificación de duplicados
+Verificamos si hay datos duplicados desde la base de datos original. No se encuentra ninguno.
+```{r}
+#| label: duplicados
+
+# ¿Hay registros repetidos en la base original?
+ds |>
+  count(ESTU_CONSECUTIVO) |>
+  filter(n > 1) |>
+  collect() |>
+  nrow()
+```
+
+## Verificación de datos faltantes
+Primero vamos a revisar la estructura de las variables categoricas para distinguir las condiciones de los datos faltantes.
+```{r}
+#| label: inventario-niveles
+#| output: false
+
+# Niveles de cada variable categórica: necesario para detectar
+# codificaciones de faltante y para fijar el orden de los factores
+categoricas <- names(dataset)[sapply(dataset, is.character)]
+
+for (v in categoricas) {
+  cat("\n---", v, "---\n")
+  print(sort(table(dataset[[v]], useNA = "ifany"), decreasing = TRUE))
+}
+
+rm(v, categoricas)
+```
+
+Ahora vamos a verificar la magnitud de los datos faltantes. Podemos ver que la información sobre colegio bilingue tiene la mayor cantidad de datos faltantes y 23 variables del cuestionario socioeconómico cuentan con alrededor de 2,6% a 4% de datos faltantes.
+
+```{r}
+#| label: faltantes
+#| message: false
+
+# NA explícitos
+na_explicitos <- dataset |>
+  summarise(across(everything(), ~ sum(is.na(.x)))) |>
+  pivot_longer(everything(), names_to = "variable", values_to = "n_na") |>
+  mutate(pct = round(100 * n_na / nrow(dataset), 2)) |>
+  arrange(desc(n_na))
+
+na_explicitos |> filter(n_na > 0) |> print(n = Inf)
+```
+
+Revisamos como se estructuran las no respuesta a nivel de individuo.
+
+```{r}
+#| label: patron-faltantes
+
+vars_encuesta <- dataset |>
+  select(starts_with("FAMI_"), starts_with("ESTU_DEDICACION"),
+         ESTU_HORASSEMANATRABAJA) |>
+  names()
+
+n_faltantes <- rowSums(is.na(dataset[vars_encuesta]))
+
+table(cut(n_faltantes, c(-1, 0, 5, 15, 22, Inf),
+          labels = c("0", "1-5", "6-15", "16-22", "todas")))
+
+rm(faltantes)
+```
+
+Se realiza una comparación de las características observables de los 3 grupos
+
+```{r}
+#| label: sesgo-noresp
+
+# Creamos temporalmente la variable 'grupo_nr' para verificar los bloques de respuesta a la encuesta
+dataset <- dataset |>
+  mutate(grupo_nr = case_when(
+    rowSums(is.na(pick(all_of(vars_encuesta)))) == 0  ~ "Completo",
+    rowSums(is.na(pick(all_of(vars_encuesta)))) >= 16 ~ "Bloque",
+    TRUE                                              ~ "Parcial"
+  ))
+
+# Mostramos un resumen agrupando por grupo_nr
+dataset |>
+  group_by(grupo_nr) |>
+  summarise(
+    n        = n(),
+    pct      = round(100 * n() / nrow(dataset), 1),
+    punt     = round(mean(PUNT_GLOBAL, na.rm = TRUE), 1),
+    pct_ofic = round(100 * mean(COLE_NATURALEZA == "OFICIAL"), 1),
+    pct_rural= round(100 * mean(COLE_AREA_UBICACION == "RURAL"), 1)
+  )
+```
+
+## Filtro
+Se conservan únicamente los registros sin valores faltantes en las 22 variables del cuestionario socioeconómico (n = 450.145; 89,2 %), dado que las técnicas multivariadas aplicadas requieren observaciones completas.
+
+```{r}
+#| label: filtro-faltantes
+
+# Filtramos por los datos que tengan completa la encuesta y eliminamos la variable grupo_nr.
+dataset <- dataset |>
+  filter(grupo_nr == "Completo") |>
+  select(-grupo_nr)
+
+nrow(dataset)
+```
+
+# Recodificación
+
+## Recodificación y conversion a factor
+Usando los datos obtenidos en la consulta de niveles, procedemos a recodificar y convertir en factores a los elementos de las columnas.
+
+```{r}
+#| label: recodificacion
+#| message: false
+#| cache: true
+
+dataset <- dataset |>
+  mutate(
+    # --- Binarias: unificar Si/No y S/N ---
+    across(
+      c(ESTU_TIENEETNIA, FAMI_TIENEINTERNET, FAMI_TIENECOMPUTADOR,
+        FAMI_TIENEAUTOMOVIL, FAMI_TIENEMOTOCICLETA, FAMI_TIENELAVADORA,
+        FAMI_TIENEHORNOMICROOGAS, FAMI_TIENECONSOLAVIDEOJUEGOS),
+      ~ factor(.x, levels = c("No", "Si"))
+    ),
+    COLE_BILINGUE = factor(COLE_BILINGUE, levels = c("N", "S"),
+                           labels = c("No", "Si")),
+
+    # --- Nominales ---
+    ESTU_GENERO      = factor(ESTU_GENERO, levels = c("F", "M")),
+    COLE_NATURALEZA  = factor(COLE_NATURALEZA, levels = c("OFICIAL", "NO OFICIAL")),
+    COLE_AREA_UBICACION = factor(COLE_AREA_UBICACION, levels = c("URBANO", "RURAL")),
+    COLE_CALENDARIO  = factor(COLE_CALENDARIO, levels = c("A", "B", "OTRO")),
+    COLE_GENERO      = factor(COLE_GENERO, levels = c("MIXTO", "FEMENINO", "MASCULINO")),
+    COLE_JORNADA     = factor(COLE_JORNADA,
+                              levels = c("MAÑANA", "TARDE", "NOCHE",
+                                         "UNICA", "COMPLETA", "SABATINA")),
+    COLE_DEPTO_UBICACION = factor(COLE_DEPTO_UBICACION),
+
+    # --- Ordinales: hábitos ---
+    ESTU_DEDICACIONLECTURADIARIA = factor(
+      ESTU_DEDICACIONLECTURADIARIA, ordered = TRUE,
+      levels = c("No leo por entretenimiento", "30 minutos o menos",
+                 "Entre 30 y 60 minutos", "Entre 1 y 2 horas",
+                 "Más de 2 horas")
+    ),
+    ESTU_DEDICACIONINTERNET = factor(
+      ESTU_DEDICACIONINTERNET, ordered = TRUE,
+      levels = c("No Navega Internet", "30 minutos o menos",
+                 "Entre 30 y 60 minutos", "Entre 1 y 3 horas",
+                 "Más de 3 horas")
+    ),
+    ESTU_HORASSEMANATRABAJA = factor(
+      ESTU_HORASSEMANATRABAJA, ordered = TRUE,
+      levels = c("0", "Menos de 10 horas", "Entre 11 y 20 horas",
+                 "Entre 21 y 30 horas", "Más de 30 horas")
+    ),
+
+    # --- Ordinales: hogar ---
+    FAMI_ESTRATOVIVIENDA = factor(
+      FAMI_ESTRATOVIVIENDA, ordered = TRUE,
+      levels = c("Sin Estrato", paste("Estrato", 1:6))
+    ),
+    FAMI_PERSONASHOGAR = factor(
+      FAMI_PERSONASHOGAR, ordered = TRUE,
+      levels = c("1 a 2", "3 a 4", "5 a 6", "7 a 8", "9 o más")
+    ),
+    FAMI_CUARTOSHOGAR = factor(
+      FAMI_CUARTOSHOGAR, ordered = TRUE,
+      levels = c("Uno", "Dos", "Tres", "Cuatro", "Cinco", "Seis o mas")
+    ),
+    FAMI_SITUACIONECONOMICA = factor(
+      FAMI_SITUACIONECONOMICA, ordered = TRUE,
+      levels = c("Peor", "Igual", "Mejor")
+    ),
+    FAMI_NUMLIBROS = factor(
+      FAMI_NUMLIBROS, ordered = TRUE,
+      levels = c("0 A 10 LIBROS", "11 A 25 LIBROS",
+                 "26 A 100 LIBROS", "MÁS DE 100 LIBROS")
+    ),
+
+    # --- Ordinales: alimentación ---
+    across(
+      c(FAMI_COMELECHEDERIVADOS, FAMI_COMECARNEPESCADOHUEVO,
+        FAMI_COMECEREALFRUTOSLEGUMBRE),
+      ~ factor(.x, ordered = TRUE,
+               levels = c("Nunca o rara vez comemos eso",
+                          "1 o 2 veces por semana",
+                          "3 a 5 veces por semana",
+                          "Todos o casi todos los días"))
+    ),
+
+    # --- Educación de los padres: ordinal + categorías no ordenables ---
+    across(
+      c(FAMI_EDUCACIONPADRE, FAMI_EDUCACIONMADRE),
+      ~ factor(.x, levels = c(
+          "Ninguno",
+          "Primaria incompleta", "Primaria completa",
+          "Secundaria (Bachillerato) incompleta",
+          "Secundaria (Bachillerato) completa",
+          "Técnica o tecnológica incompleta", "Técnica o tecnológica completa",
+          "Educación profesional incompleta", "Educación profesional completa",
+          "Postgrado",
+          "No sabe", "No Aplica"))
+    ),
+
+    # --- Ocupación: etiquetas cortas para gráficos factoriales ---
+    across(
+      c(FAMI_TRABAJOLABORPADRE, FAMI_TRABAJOLABORMADRE),
+      ~ fct_recode(factor(.x),
+          "Negocio pequeño"   = "Es dueño de un negocio pequeño (tiene pocos empleados o no tiene, por ejemplo tienda, papelería, etc",
+          "Agrícola"          = "Es agricultor, pesquero o jornalero",
+          "Cuenta propia"     = "Trabaja por cuenta propia (por ejemplo plomero, electricista)",
+          "Operario"          = "Es operario de máquinas o conduce vehículos (taxita, chofer)",
+          "Profesional"       = "Trabaja como profesional (por ejemplo médico, abogado, ingeniero)",
+          "Servicios"         = "Trabaja como personal de limpieza, mantenimiento, seguridad o construcción",
+          "Hogar / no trabaja"= "Trabaja en el hogar, no trabaja o estudia",
+          "Ventas"            = "Es vendedor o trabaja en atención al público",
+          "Auxiliar admin."   = "Tiene un trabajo de tipo auxiliar administrativo (por ejemplo, secretario o asistente)",
+          "Directivo"         = "Es dueño de un negocio grande, tiene un cargo de nivel directivo o gerencial",
+          "Pensionado"        = "Pensionado",
+          "No sabe"           = "No sabe")
+    )
+  )
+
+str(dataset, max.level = 1, list.len = 45)
+```
+
+# Creación de variables derivadas
+
+## Creación de EDAD
+Creamos la variable EDAD basada en la fecha de nacimiento. Sin embargo, notamos valores "imposibles".
+
+```{r}
+#| label: edad
+
+FECHA_PRUEBA <- as.Date("2020-11-07")  # verificar fecha oficial de aplicación
+
+dataset <- dataset |>
+  mutate(
+    EDAD = as.numeric(
+      difftime(FECHA_PRUEBA, as.Date(ESTU_FECHANACIMIENTO, tz = "America/Bogota"), units = "days")
+    ) / 365.25
+  ) |>
+  relocate(EDAD, .after = ESTU_FECHANACIMIENTO)
+
+summary(dataset$EDAD)
+```
+
+Miramos cuantos datos tienen valores imposibles. Consideramos el rango menor que 7 y mayor que 100 como imposible.
+
+```{r}
+#| label: edad-rango
+
+dataset |>
+  summarise(
+    n_invalidos = sum(EDAD < 7 | EDAD > 100, na.rm = TRUE),
+    n_na_fecha  = sum(is.na(ESTU_FECHANACIMIENTO)),
+    pct         = round(100 * n_invalidos / n(), 3)
+  )
+```
+
+Finalmente vamos a filtrarlos y los consideraremos como NA. Se tienen que eliminar si se usa la variable edad en algun momento.
+
+```{r}
+#| label: edad-invalidos
+
+dataset <- dataset |>
+  mutate(EDAD = if_else(EDAD < 7 | EDAD > 100, NA_real_, EDAD))
+
+summary(dataset$EDAD)
+```
+
