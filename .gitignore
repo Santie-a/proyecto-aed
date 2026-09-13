@@ -10,7 +10,6 @@ output/
 *_cache/
 .DS_Store
 !data/**/.gitkeep
-reports/*.html
 reports/*_files/
 /.quarto/
 

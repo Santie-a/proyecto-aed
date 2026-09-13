@@ -7,16 +7,15 @@ Análisis de los resultados de las pruebas Saber 11 del segundo semestre de 2020
 
 - R (versión reciente) y [RStudio](https://posit.co/download/rstudio-desktop/)
 - Git
-- ~1.5 GB libres en disco y conexión estable para la descarga inicial
 
 ## Instalación
 
 ```bash
-git clone https://github.com/USUARIO/REPO.git
-cd REPO
+git clone https://github.com/Santie-a/proyecto-aed.git
+cd proyecto-aed
 ```
 
-Abre el archivo `.Rproj` haciendo doble clic. Las rutas dependen de que la sesión arranque en la raíz.
+Se puede inicializar abriendo el archivo `.Rproj`. Las rutas dependen de que la sesión arranque en la raíz.
 
 En la consola de RStudio:
 
@@ -24,14 +23,21 @@ En la consola de RStudio:
 renv::restore()
 ```
 
-Esto reconstruye el entorno exacto de paquetes a partir de `renv.lock`. Puede
-tardar varios minutos la primera vez.
+Esto reconstruye el entorno exacto de paquetes a partir de `renv.lock`.
 
 ## Preparación de los datos
 
-Solo se ejecuta una vez, en caso de que sea necesario. Los datos (Parquet) están en el repositorio.
+Los datos (Parquet) están en el repositorio. Sin embargo es posible obtenerlos de la siguiente manera:
 
 ```r
 source(here::here("R", "download.R"))    # descarga el CSV (~500 MB)
 source(here::here("R", "to_parquet.R"))  # convierte a Parquet (~25 MB)
 ```
+
+## Documentos
+
+En la carpeta de [reportes](reports) están los .qmd y HTML generados correspondientes a las entregas donde se encuentra
+la parte de `R`. En este mismo folder están los LaTeX separados por carpeta:
+
+- [Entrega 1](reports/latex_entrega_1/)
+- [Entrega 2](reports/latex_entrega_2/)
