@@ -13,3 +13,24 @@ output/
 reports/*.html
 reports/*_files/
 /.quarto/
+
+# Archivos de trabajo local (planes, borradores)
+temp/
+
+# Salidas de compilacion de LaTeX
+reports/**/*.pdf
+!reports/latex_entrega_2/figuras/*.pdf
+reports/**/*.aux
+reports/**/*.bbl
+reports/**/*.bcf
+reports/**/*.blg
+reports/**/*.fdb_latexmk
+reports/**/*.fls
+reports/**/*.lof
+reports/**/*.log
+reports/**/*.lot
+reports/**/*.out
+reports/**/*.run.xml
+reports/**/*.synctex.gz
+reports/**/*.toc
+reports/**/*.xdv
