@@ -41,3 +41,18 @@ la parte de `R`. En este mismo folder están los LaTeX separados por carpeta:
 
 - [Entrega 1](reports/latex_entrega_1/)
 - [Entrega 2](reports/latex_entrega_2/)
+
+## Scripts de R
+
+El código que no hace parte de la exposición de las entregas vive en [`R/`](R), y los
+`.qmd` lo cargan con `source()`:
+
+- `preparacion.R` — selección de columnas, filtros de validez, recodificación a factores
+  y creación de `EDAD`. Deja en el entorno `dataset`, `vars_cuali` y `vars_cuanti`.
+- `exportacion.R` — rutas de salida, formato numérico y emisión de los fragmentos `.tex`
+  (tablas) y `.pdf`/`.png` (figuras) que consume el LaTeX.
+- `graficos.R` — tema visual y funciones reutilizables de tabla y gráfico, univariadas y
+  bivariadas. Depende de `exportacion.R`.
+- `cifras.R` — arma la hoja de cifras (`cifras.txt`) con todos los números citados en el
+  documento.
+- `download.R` y `to_parquet.R` — obtención y conversión de la base.

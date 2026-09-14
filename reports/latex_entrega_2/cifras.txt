@@ -1,7 +1,7 @@
 HOJA DE CIFRAS - Entrega 2, analisis descriptivo
-Generado por reports/Entrega 2.qmd. No editar a mano.
+Generado por R/cifras.R desde reports/Entrega 2.qmd. No editar a mano.
 Base: 450145 registros x 41 columnas.
-Generado el 2026-09-13 16:40
+Generado el 2026-09-14 17:43
 
 Convencion espanola: coma decimal, punto de miles.
 Los porcentajes se reportan SIN el simbolo %.
