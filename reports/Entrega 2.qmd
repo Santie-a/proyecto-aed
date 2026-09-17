@@ -198,7 +198,7 @@ tex_longtable(
   align     = paste(c("l", rep("r", length(vars_cuanti))), collapse = " "),
   cabeceras = c("Medida", unname(ETIQ[res$variable])),
   grupos    = MEDIDAS$grupo,
-  tamano    = "\\fontsize{7}{8.5}\\selectfont\\setstretch{1}\\setlength{\\tabcolsep}{4pt}",
+  tamano    = "\\tiny\\setstretch{1}\\setlength{\\tabcolsep}{4pt}",
   nota      = sprintf("Base de %s estudiantes. La moda no se reporta en \\texttt{EDAD} ni en \\texttt{ESTU\\_INSE\\_INDIVIDUAL} por ser continuas. Los componentes se miden de 0 a 100 y el puntaje global de 0 a 500.",
                       num(nrow(dataset), 0))
 )

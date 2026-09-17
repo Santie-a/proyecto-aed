@@ -2419,13 +2419,13 @@ window.Quarto = {
 
 <section id="presentación" class="level1">
 <h1>Presentación</h1>
-<p>Este <code>.qmd</code> calcula y exporta las tablas y figuras que usa el PDF generado desde <code>reports/latex_entrega_2/main.tex</code>, junto con las cifras que el texto cita. Solo contiene lo que el documento usa: las tablas y figuras exportadas están listadas en <code>FIGURAS_DOC</code> y <code>TABLAS_DOC</code> dentro de <code>R/exportacion.R</code>.</p>
+<p>Este <code>.qmd</code> calcula y exporta las tablas y figuras que usa el PDF generado desde <code>reports/latex_entrega_2/main.tex</code>, junto con las cifras que el texto cita. Solo contiene lo que el documento usa. las tablas y figuras exportadas están listadas en <code>FIGURAS_DOC</code> y <code>TABLAS_DOC</code> dentro de <code>R/exportacion.R</code>.</p>
 </section>
 <section id="preparación-y-configuración" class="level1">
 <h1>0. Preparación y configuración</h1>
 <section id="carga-de-la-base" class="level2">
 <h2 class="anchored" data-anchor-id="carga-de-la-base">0.1 Carga de la base</h2>
-<p><code>R/preparacion.R</code> reproduce la preparación de la Entrega 1: selección de las 21 columnas, filtros de validez y de cuestionario completo, recodificación a factores y creación de <code>EDAD</code>.</p>
+<p><code>R/preparacion.R</code> reproduce la preparación de la Entrega 1 (con una re-selección de las variables): selección de las 21 columnas, filtros de validez y de cuestionario completo, recodificación a factores y creación de <code>EDAD</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R&quot;</span>, <span class="st">&quot;preparacion.R&quot;</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -2459,7 +2459,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="variables-cualitativas">1.1 Variables cualitativas</h2>
 <section id="tabla-de-frecuencias" class="level3">
 <h3 class="anchored" data-anchor-id="tabla-de-frecuencias">1.1.1 Tabla de frecuencias</h3>
-<p>Dos bloques lado a lado: condiciones del hogar y características del establecimiento. Incluye las variables del planteamiento (naturaleza, zona, nivel socioeconómico) y las de mayor asociación con el desempeño.</p>
+<p>Condiciones del hogar y características del establecimiento. Incluye las variables del planteamiento (naturaleza, zona, nivel socioeconómico) y las de mayor asociación con el desempeño.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>etiq <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Sin Estrato&quot;</span> <span class="ot">=</span> <span class="st">&quot;Sin estrato&quot;</span>, <span class="st">&quot;No&quot;</span> <span class="ot">=</span> <span class="st">&quot;No&quot;</span>, <span class="st">&quot;Si&quot;</span> <span class="ot">=</span> <span class="st">&quot;Sí&quot;</span>,</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;OFICIAL&quot;</span> <span class="ot">=</span> <span class="st">&quot;Oficial&quot;</span>, <span class="st">&quot;NO OFICIAL&quot;</span> <span class="ot">=</span> <span class="st">&quot;No oficial&quot;</span>,</span>
@@ -2479,7 +2479,7 @@ window.Quarto = {
 </section>
 <section id="variables-ordinales-del-estudiante-y-del-hogar" class="level3">
 <h3 class="anchored" data-anchor-id="variables-ordinales-del-estudiante-y-del-hogar">1.1.2 Variables ordinales del estudiante y del hogar</h3>
-<p>La educación de la madre se agrupa en cuatro niveles solo para la figura; en la base conserva sus 12 categorías.</p>
+<p>La educación de la madre se agrupa en cuatro niveles solo para la figura. En la base conserva sus 12 categorías.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>educ_madre <span class="ot">&lt;-</span> forcats<span class="sc">::</span><span class="fu">fct_collapse</span>(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  dataset<span class="sc">$</span>FAMI_EDUCACIONMADRE,</span>
@@ -2626,7 +2626,7 @@ $deptos_menor_0.2
 <span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">align     =</span> <span class="fu">paste</span>(<span class="fu">c</span>(<span class="st">&quot;l&quot;</span>, <span class="fu">rep</span>(<span class="st">&quot;r&quot;</span>, <span class="fu">length</span>(vars_cuanti))), <span class="at">collapse =</span> <span class="st">&quot; &quot;</span>),</span>
 <span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">cabeceras =</span> <span class="fu">c</span>(<span class="st">&quot;Medida&quot;</span>, <span class="fu">unname</span>(ETIQ[res<span class="sc">$</span>variable])),</span>
 <span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">grupos    =</span> MEDIDAS<span class="sc">$</span>grupo,</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">tamano    =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">fontsize{7}{8.5}</span><span class="sc">\\</span><span class="st">selectfont</span><span class="sc">\\</span><span class="st">setstretch{1}</span><span class="sc">\\</span><span class="st">setlength{</span><span class="sc">\\</span><span class="st">tabcolsep}{4pt}&quot;</span>,</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">tamano    =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">tiny</span><span class="sc">\\</span><span class="st">setstretch{1}</span><span class="sc">\\</span><span class="st">setlength{</span><span class="sc">\\</span><span class="st">tabcolsep}{4pt}&quot;</span>,</span>
 <span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">nota      =</span> <span class="fu">sprintf</span>(<span class="st">&quot;Base de %s estudiantes. La moda no se reporta en </span><span class="sc">\\</span><span class="st">texttt{EDAD} ni en </span><span class="sc">\\</span><span class="st">texttt{ESTU</span><span class="sc">\\</span><span class="st">_INSE</span><span class="sc">\\</span><span class="st">_INDIVIDUAL} por ser continuas. Los componentes se miden de 0 a 100 y el puntaje global de 0 a 500.&quot;</span>,</span>
 <span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">num</span>(<span class="fu">nrow</span>(dataset), <span class="dv">0</span>))</span>
 <span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>)</span>

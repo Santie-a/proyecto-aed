@@ -1,4 +1,4 @@
-# Saber 11 — 2020-2
+# Saber 11 - 2020-2
 
 Análisis de los resultados de las pruebas Saber 11 del segundo semestre de 2020
 (ICFES). Fuente: [datos.gov.co](https://www.datos.gov.co/Educaci-n/Saber-11-2020-2/rnvb-vnyh).
@@ -47,12 +47,12 @@ la parte de `R`. En este mismo folder están los LaTeX separados por carpeta:
 El código que no hace parte de la exposición de las entregas vive en [`R/`](R), y los
 `.qmd` lo cargan con `source()`:
 
-- `preparacion.R` — selección de columnas, filtros de validez, recodificación a factores
+- `preparacion.R` - selección de columnas, filtros de validez, recodificación a factores
   y creación de `EDAD`. Deja en el entorno `dataset`, `vars_cuali` y `vars_cuanti`.
-- `exportacion.R` — rutas de salida, formato numérico y emisión de los fragmentos `.tex`
+- `exportacion.R` - rutas de salida, formato numérico y emisión de los fragmentos `.tex`
   (tablas) y `.pdf`/`.png` (figuras) que consume el LaTeX.
-- `graficos.R` — tema visual y funciones reutilizables de tabla y gráfico, univariadas y
+- `graficos.R` - tema visual y funciones reutilizables de tabla y gráfico, univariadas y
   bivariadas. Depende de `exportacion.R`.
-- `cifras.R` — arma la hoja de cifras (`cifras.txt`) con todos los números citados en el
+- `cifras.R` - arma la hoja de cifras (`cifras.txt`) con todos los números citados en el
   documento.
 - `download.R` y `to_parquet.R` — obtención y conversión de la base.
