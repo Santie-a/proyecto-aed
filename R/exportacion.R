@@ -21,12 +21,10 @@ for (d in c(DIR_FIG, DIR_TAB)) dir.create(d, recursive = TRUE, showWarnings = FA
 # Exportar a esta medida hace que la letra de las figuras salga al tamaño previsto.
 ANCHO <- 6.5
 
-FIGURAS_DOC <- c("fig-bienes", "fig-capital-educ", "fig-global", "fig-corr",
-                 "fig-hexbin", "fig-box-clave", "fig-apilado-estrato",
-                 "fig-ranking")
+FIGURAS_DOC <- c("fig-ordinales", "fig-global", "fig-componentes-inse",
+                 "fig-corr-inse", "fig-box-clave", "fig-cramer-nse")
 
-TABLAS_DOC <- c("tab-perfil", "tab-hogar", "tab-capital", "tab-colegio",
-                "tbl-resumen-cuant", "tbl-conting-1", "tbl-cramer")
+TABLAS_DOC <- c("tab-frec-clave", "tbl-resumen-cuant", "tab-asociacion")
 
 options(scipen = 999)
 
@@ -92,7 +90,7 @@ celda <- function(x, dig = 2, pct = FALSE) {
 FILAS_LONGTABLE <- 20
 
 tex_longtable <- function(df, archivo, caption, label, align, cabeceras,
-                          grupos = NULL, tamano = "\\scriptsize\\setstretch{1}",
+                          grupos = NULL, tamano = "\\tiny\\setstretch{1}",
                           nota = NULL) {
   if (!archivo %in% TABLAS_DOC) return(invisible(df))
   k    <- ncol(df)
@@ -104,7 +102,6 @@ tex_longtable <- function(df, archivo, caption, label, align, cabeceras,
   anterior <- NULL
   for (i in seq_len(nrow(df))) {
     if (!is.null(grupos) && (is.null(anterior) || grupos[i] != anterior)) {
-      if (!is.null(anterior)) filas <- c(filas, "  \\addlinespace")
       filas <- c(filas,
                  sprintf("  \\multicolumn{%d}{l}{\\textit{%s}} \\\\", k, grupos[i]))
       anterior <- grupos[i]
@@ -128,7 +125,7 @@ tex_longtable <- function(df, archivo, caption, label, align, cabeceras,
       "", "  \\bottomrule", "  \\endlastfoot", "",
       filas, "\\end{longtable}", "\\endgroup")
     if (!is.null(nota)) {
-      L <- c(L, sprintf("\\vspace{-0.8em}\\noindent{\\footnotesize %s\\par}", nota))
+      L <- c(L, sprintf("\\noindent{\\footnotesize %s\\par}", nota))
     }
   } else {
     # Caja indivisible en el flujo del texto. No es un flotante: un flotante se
@@ -136,7 +133,7 @@ tex_longtable <- function(df, archivo, caption, label, align, cabeceras,
     # introduce. El minipage mantiene juntas leyenda, tabla y nota.
     L <- c(L,
       sprintf("\\begingroup%s", tamano),
-      "\\par\\medskip",
+      "\\par",
       "\\noindent\\begin{minipage}{\\textwidth}",
       "\\centering",
       sprintf("\\captionof{table}{%s}\\label{%s}", caption, label),
@@ -145,10 +142,61 @@ tex_longtable <- function(df, archivo, caption, label, align, cabeceras,
       filas,
       "  \\bottomrule", "\\end{tabular}")
     if (!is.null(nota)) {
-      L <- c(L, sprintf("\\par\\vspace{0.4em}\\raggedright{\\footnotesize %s\\par}", nota))
+      L <- c(L, sprintf("\\par\\raggedright{\\footnotesize %s\\par}", nota))
     }
-    L <- c(L, "\\end{minipage}", "\\par\\medskip", "\\endgroup")
+    L <- c(L, "\\end{minipage}", "\\par", "\\endgroup")
   }
   escribir_utf8(L, file.path(DIR_TAB, paste0(archivo, ".tex")))
   invisible(df)
+}
+
+# Tabla de frecuencias en dos bloques lado a lado. `izq` y `der` son data
+# frames con las columnas grupo, nivel, n y pct ya formateadas; cada grupo
+# abre con su propia fila de cabecera. El bloque más corto se rellena con
+# filas vacías para que ambos terminen a la misma altura.
+tex_tabla_doble <- function(izq, der, archivo, caption, label,
+                            titulos = c("Bloque 1", "Bloque 2"),
+                            tamano = "\\tiny\\setstretch{1}",
+                            nota = NULL) {
+  if (!archivo %in% TABLAS_DOC) return(invisible(NULL))
+
+  lado <- function(d) {
+    out <- character(0)
+    for (g in unique(d$grupo)) {
+      out <- c(out, sprintf("\\multicolumn{3}{l}{\\textit{%s}}", g))
+      s <- d[d$grupo == g, ]
+      out <- c(out, paste(s$nivel, s$n, s$pct, sep = " & "))
+    }
+    out
+  }
+  a <- lado(izq)
+  b <- lado(der)
+  k <- max(length(a), length(b))
+  a <- c(a, rep(" & & ", k - length(a)))
+  b <- c(b, rep(" & & ", k - length(b)))
+  filas <- paste0("  ", a, " & ", b, " \\\\")
+
+  cab <- "\\textbf{Categoría} & \\textbf{n} & \\textbf{\\%}"
+  L <- c("% Generado por R/exportacion.R desde reports/Entrega 2.qmd",
+    sprintf("\\begingroup%s", tamano),
+    "\\par",
+    "\\noindent\\begin{minipage}{\\textwidth}",
+    "\\centering",
+    sprintf("\\captionof{table}{%s}\\label{%s}", caption, label),
+    "\\begin{tabular}{l r r @{\\hspace{2.5em}} l r r}",
+    "  \\toprule",
+    sprintf("  \\multicolumn{3}{c}{\\textbf{%s}} & \\multicolumn{3}{c}{\\textbf{%s}} \\\\",
+            titulos[1], titulos[2]),
+    "  \\cmidrule(r{2.5em}){1-3}\\cmidrule{4-6}",
+    sprintf("  %s & %s \\\\", cab, cab),
+    "  \\midrule",
+    filas,
+    "  \\bottomrule",
+    "\\end{tabular}")
+  if (!is.null(nota)) {
+    L <- c(L, sprintf("\\par\\raggedright{\\footnotesize %s\\par}", nota))
+  }
+  L <- c(L, "\\end{minipage}", "\\par", "\\endgroup")
+  escribir_utf8(L, file.path(DIR_TAB, paste0(archivo, ".tex")))
+  invisible(NULL)
 }

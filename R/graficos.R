@@ -30,9 +30,8 @@ NARANJA <- "#D1622B"   # acento: medias y curvas de densidad
 
 # --- Cualitativas -----------------------------------------------------------
 
-# Frecuencias absolutas y relativas. Los NA se muestran de forma explícita:
-# el 16,3 % de faltantes de COLE_BILINGUE se conservó a propósito y ocultarlo
-# daría una lectura equivocada de la variable.
+# Frecuencias absolutas y relativas. Si una variable tiene NA se muestran como
+# categoría explícita en lugar de eliminarse en silencio.
 tabla_frec <- function(var, df = dataset) {
   x  <- df[[var]]
   tb <- as.data.frame(table(x, useNA = "ifany"), stringsAsFactors = FALSE)
@@ -47,57 +46,54 @@ tabla_frec <- function(var, df = dataset) {
   tb
 }
 
-# Tabla de frecuencias consolidada de un bloque temático: cada variable
-# encabeza su propio grupo de filas dentro de una única longtable.
-exportar_frec <- function(vars, archivo, caption, df = dataset) {
-  d <- map_dfr(vars, function(v) {
-    tb <- tabla_frec(v, df)
+# Bloque de frecuencias ya formateado para tex_tabla_doble(). `etiquetas` es
+# un vector con nombre que reemplaza los niveles originales en la tabla.
+bloque_frec <- function(vars, etiquetas = NULL, df = dataset) {
+  map_dfr(vars, function(v) {
+    tb  <- tabla_frec(v, df)
+    niv <- tb$nivel
+    if (!is.null(etiquetas)) niv <- dplyr::coalesce(unname(etiquetas[niv]), niv)
     tibble::tibble(
-      grupo = v, nivel = tb$nivel, n = tb$n, pct = tb$pct,
-      acum  = if ("pct_acum" %in% names(tb)) tb$pct_acum else NA_real_
+      grupo = paste0("\\texttt{", tex_escape(v), "}"),
+      nivel = tex_escape(niv),
+      n     = celda(tb$n, 0),
+      pct   = celda(tb$pct, 1)
     )
   })
-
-  tex_longtable(
-    data.frame(nivel = tex_escape(d$nivel),
-               n     = celda(d$n, 0),
-               pct   = celda(d$pct, 2, pct = TRUE),
-               acum  = celda(d$acum, 2, pct = TRUE)),
-    archivo, caption, paste0("tab:", sub("^tab-", "", archivo)),
-    align     = "P{6.2cm} r r r",
-    cabeceras = c("Categoría", "Frecuencia", "Frec. relativa", "Frec. acumulada"),
-    grupos    = paste0("\\texttt{", tex_escape(d$grupo), "}"),
-    nota      = "La frecuencia acumulada sólo se reporta en las variables ordinales. Los datos faltantes se muestran como categoría explícita."
-  )
-  d
 }
 
-# Diagrama de barras. Los factores ordenados conservan su orden natural; los
-# nominales se ordenan por frecuencia. Se pasa a barras horizontales cuando
-# hay muchos niveles o las etiquetas son largas.
-graf_barras <- function(var, df = dataset, titulo = var) {
-  x  <- df[[var]]
-  tb <- tabla_frec(var, df)
-  ord   <- is.ordered(x)
-  horiz <- nrow(tb) > 6 || max(nchar(tb$nivel)) > 14
+# Barra horizontal apilada al 100 % para una variable ordinal. Los niveles
+# van de claro a oscuro según su posición en la escala; los niveles fuera de
+# la escala (por ejemplo "No sabe") se pintan en gris.
+graf_ord_apilado <- function(x, titulo, gris = character(0)) {
+  tb <- as.data.frame(table(x), stringsAsFactors = FALSE)
+  names(tb) <- c("nivel", "n")
+  tb$pct   <- 100 * tb$n / sum(tb$n)
+  tb$nivel <- factor(tb$nivel, levels = levels(x))
 
-  niveles <- if (ord) {
-    if (horiz) rev(tb$nivel) else tb$nivel
-  } else {
-    tb$nivel[order(tb$n, decreasing = !horiz)]
-  }
-  tb$nivel <- factor(tb$nivel, levels = niveles)
+  escala <- setdiff(levels(x), gris)
+  cols   <- setNames(grDevices::colorRampPalette(c("#DCE6EE", "#123D5C"))(length(escala)),
+                     escala)
+  cols   <- c(cols, setNames(rep("#B8BEC4", length(gris)), gris))
+  oscuro <- escala[seq_along(escala) > length(escala) / 2]
+  tb$txt <- ifelse(tb$nivel %in% oscuro, "white", "grey15")
 
-  p <- ggplot(tb, aes(x = nivel, y = pct)) +
-    geom_col(fill = AZUL, width = 0.72) +
-    geom_text(aes(label = paste0(num(pct), "%")), size = 2.5, colour = "grey25",
-              family = "Times New Roman",
-              hjust = if (horiz) -0.12 else 0.5,
-              vjust = if (horiz) 0.5 else -0.45) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.16))) +
-    labs(title = titulo, x = NULL, y = "% de estudiantes")
-
-  if (horiz) p + coord_flip() else p
+  ggplot(tb, aes(x = pct, y = "", fill = nivel)) +
+    geom_col(width = 0.75, position = position_stack(reverse = TRUE)) +
+    geom_text(aes(label = ifelse(pct >= 5, paste0(num(pct, 1), "%"), ""), colour = txt),
+              position = position_stack(vjust = 0.5, reverse = TRUE),
+              size = 2.5, family = "Times New Roman") +
+    scale_fill_manual(values = cols) +
+    scale_colour_identity() +
+    scale_x_continuous(expand = c(0, 0)) +
+    guides(fill = guide_legend(nrow = 1)) +
+    labs(title = titulo, x = NULL, y = NULL, fill = NULL) +
+    theme(legend.position = "bottom", legend.justification = "left",
+          legend.margin = margin(0, 0, 0, 0), legend.box.spacing = unit(1, "mm"),
+          legend.key.size = unit(3, "mm"), legend.text = element_text(size = 7.5),
+          axis.text = element_blank(), panel.grid = element_blank(),
+          plot.title = element_text(size = 9),
+          plot.margin = margin(2, 4, 8, 4))
 }
 
 # --- Cuantitativas ----------------------------------------------------------
@@ -111,6 +107,12 @@ moda_num <- function(x, var) {
   x  <- x[!is.na(x)]
   tb <- table(x)
   as.numeric(names(tb)[which.max(tb)])
+}
+
+# Coeficiente de asimetría muestral, para documentar la forma de cada distribución
+asimetria <- function(x) {
+  x <- x[!is.na(x)]
+  mean((x - mean(x))^3) / sd(x)^3
 }
 
 resumen_cuant <- function(vars, df = dataset) {
@@ -133,35 +135,35 @@ resumen_cuant <- function(vars, df = dataset) {
       cv       = 100 * sd(xs) / mean(xs),
       Q1       = q[1],
       Q3       = q[3],
-      RIC      = q[3] - q[1]
+      RIC      = q[3] - q[1],
+      asimetria = asimetria(xs)
     )
   })
-}
-
-# Coeficiente de asimetría muestral, para documentar la forma de cada distribución
-asimetria <- function(x) {
-  x <- x[!is.na(x)]
-  mean((x - mean(x))^3) / sd(x)^3
 }
 
 # Histograma con densidad superpuesta + diagrama de caja compartiendo el eje X
 graf_dist <- function(var, df = dataset, titulo = var, bins = 45, unidad = "") {
   d  <- tibble::tibble(x = df[[var]][!is.na(df[[var]])])
   m  <- mean(d$x); md <- median(d$x)
+  rango <- range(d$x)
 
   p1 <- ggplot(d, aes(x)) +
     geom_histogram(aes(y = after_stat(density)), bins = bins,
                    fill = AZUL, colour = "white", linewidth = 0.15) +
     geom_density(colour = NARANJA, linewidth = 0.9) +
     geom_vline(xintercept = m, colour = "grey20", linetype = "dashed") +
+    coord_cartesian(xlim = rango) +
+    scale_y_continuous(labels = label_number(decimal.mark = ",")) +
     labs(title = titulo,
          subtitle = paste0("Media = ", num(m), "  |  Mediana = ", num(md),
                            "  |  DE = ", num(sd(d$x))),
          x = NULL, y = "Densidad")
 
+  # Mismo rango en ambos paneles para que el histograma y la caja queden alineados
   p2 <- ggplot(d, aes(x)) +
     geom_boxplot(fill = AZUL, alpha = 0.5, outlier.alpha = 0.03,
                  outlier.size = 0.4, width = 0.6) +
+    coord_cartesian(xlim = rango) +
     labs(x = unidad, y = NULL) +
     theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
@@ -193,61 +195,78 @@ eta2 <- function(num_v, cat_v) {
   sum(ng * (mg - mean(y))^2) / sum((y - mean(y))^2)
 }
 
-# Diagrama de caja por grupos, con la media marcada en naranja
-graf_box_grupo <- function(var_cat, var_num = "PUNT_GLOBAL", df = dataset,
-                           titulo = var_cat) {
-  d <- df |>
-    dplyr::select(cat = tidyselect::all_of(var_cat),
-                  y   = tidyselect::all_of(var_num)) |>
+# Diagrama de caja vertical de una cuantitativa por grupos, con la media
+# marcada en naranja y el eta cuadrado en el subtítulo. Recibe los vectores ya
+# recodificados para poder usar etiquetas cortas en paneles estrechos.
+graf_box <- function(cat, y, titulo, ylab = "Puntaje global") {
+  d <- tibble::tibble(cat = cat, y = y) |>
     dplyr::filter(!is.na(cat), !is.na(y))
 
-  d$cat <- if (is.ordered(d$cat)) forcats::fct_rev(factor(d$cat, ordered = FALSE))
-           else forcats::fct_reorder(d$cat, d$y, .fun = median)
-
-  # Subtítulo corto: estos gráficos se combinan en paneles estrechos.
   ggplot(d, aes(x = cat, y = y)) +
     geom_boxplot(fill = AZUL, alpha = 0.55, outlier.alpha = 0.02,
-                 outlier.size = 0.3, width = 0.65) +
-    stat_summary(fun = mean, geom = "point", colour = NARANJA, size = 1.6) +
-    coord_flip() +
-    labs(title = titulo, subtitle = paste0("eta² = ", num(eta2(d$y, d$cat), 3)),
-         x = NULL, y = var_num)
+                 outlier.size = 0.25, width = 0.62) +
+    stat_summary(fun = mean, geom = "point", colour = NARANJA, size = 1.4) +
+    labs(title = titulo,
+         subtitle = paste0("\u03b7\u00b2 = ", num(eta2(d$y, d$cat), 3)),
+         x = NULL, y = ylab) +
+    theme(axis.text.x = element_text(size = 7.5))
 }
 
-# Tabla de contingencia con porcentajes por fila
-exportar_conting <- function(v1, v2, archivo, caption, df = dataset) {
-  tb <- table(df[[v1]], df[[v2]])
-  pr <- 100 * prop.table(tb, margin = 1)
-  d  <- as.data.frame.matrix(pr)
-  out <- data.frame(fila = tex_escape(rownames(d)))
-  for (cl in names(d)) out[[cl]] <- celda(d[[cl]], 1, pct = TRUE)
+# Matriz triangular inferior (correlaciones o V de Cramér) con etiquetas en
+# convención española. `min_etiqueta` oculta los valores pequeños en matrices
+# densas para que las etiquetas no se encimen; el color los sigue mostrando.
+graf_matriz <- function(M, titulo, limites = c(-1, 1),
+                        colores = c(NARANJA, "white", AZUL),
+                        min_etiqueta = 0, tam = 2.4, dig = 2) {
+  niv <- rownames(M)
+  d <- as.data.frame(as.table(M), stringsAsFactors = FALSE) |>
+    stats::setNames(c("fila", "col", "valor")) |>
+    dplyr::mutate(i = match(fila, niv), j = match(col, niv)) |>
+    dplyr::filter(i > j) |>
+    dplyr::mutate(fila = factor(fila, levels = rev(niv)),
+                  col  = factor(col, levels = niv),
+                  etiqueta = ifelse(abs(valor) >= min_etiqueta, num(valor, dig), ""),
+                  txt = ifelse(abs(valor) > 0.6 * max(abs(limites)), "white", "grey15"))
 
-  tex_longtable(
-    out, archivo, caption, paste0("tab:", sub("^tbl-", "", archivo)),
-    align     = paste(c("P{5.2cm}", rep("r", ncol(d))), collapse = " "),
-    cabeceras = c(paste0("\\texttt{", tex_escape(v1), "}"), tex_escape(names(d))),
-    nota      = sprintf("Porcentajes calculados por fila. $V$ de Cramér = %s.",
-                        num(cramer_v(df[[v1]], df[[v2]]), 3))
-  )
-  d
+  ggplot(d, aes(x = col, y = fila, fill = valor)) +
+    geom_tile(colour = "white", linewidth = 0.4) +
+    geom_text(aes(label = etiqueta, colour = txt), size = tam,
+              family = "Times New Roman") +
+    scale_fill_gradientn(colours = colores, limits = limites, guide = "none") +
+    scale_colour_identity() +
+    scale_x_discrete(drop = TRUE) +
+    scale_y_discrete(drop = TRUE) +
+    coord_fixed() +
+    labs(title = titulo, x = NULL, y = NULL) +
+    theme(panel.grid = element_blank(),
+          axis.text.x = element_text(angle = 45, hjust = 1, size = 7.5),
+          axis.text.y = element_text(size = 7.5))
 }
 
-# Barras apiladas al 100 %: la forma correcta de comparar composición cuando
-# los grupos tienen tamaños muy dispares
-graf_apilado <- function(v1, v2, df = dataset, titulo = NULL) {
-  d <- df |>
-    dplyr::select(a = tidyselect::all_of(v1), b = tidyselect::all_of(v2)) |>
-    dplyr::filter(!is.na(a), !is.na(b))
-  if (is.ordered(d$a)) d$a <- forcats::fct_rev(factor(d$a, ordered = FALSE))
+# Barras apiladas al 100 %: la forma adecuada de comparar composición cuando
+# los grupos tienen tamaños muy dispares. `a` define las barras y `b` el relleno.
+graf_apilado <- function(a, b, titulo, xlab = NULL) {
+  d <- tibble::tibble(a = a, b = b) |>
+    dplyr::filter(!is.na(a), !is.na(b)) |>
+    dplyr::count(a, b) |>
+    dplyr::group_by(a) |>
+    dplyr::mutate(pct = 100 * n / sum(n)) |>
+    dplyr::ungroup()
 
-  ggplot(d, aes(y = a, fill = b)) +
-    geom_bar(position = "fill", width = 0.72) +
-    scale_x_continuous(breaks = c(0, 0.5, 1),
-                       labels = percent_format(accuracy = 1),
-                       expand = expansion(mult = c(0, 0.02))) +
-    scale_fill_brewer(palette = "Blues", direction = -1) +
-    labs(title = titulo %||% paste0(v1, " x ", v2),
-         x = "Composición (%)", y = NULL, fill = NULL) +
-    theme(legend.position = "bottom", legend.key.size = unit(3.5, "mm"),
-          legend.text = element_text(size = 7))
+  k <- nlevels(factor(d$b))
+  cols <- grDevices::colorRampPalette(c("#DCE6EE", "#123D5C"))(k)
+  d$txt <- ifelse(as.integer(factor(d$b)) > k / 2, "white", "grey15")
+
+  ggplot(d, aes(x = pct, y = a, fill = b)) +
+    geom_col(width = 0.7, position = position_stack(reverse = TRUE)) +
+    geom_text(aes(label = ifelse(pct >= 9, paste0(num(pct, 1), "%"), ""), colour = txt),
+              position = position_stack(vjust = 0.5, reverse = TRUE),
+              size = 2.4, family = "Times New Roman") +
+    scale_fill_manual(values = cols) +
+    scale_colour_identity() +
+    scale_x_continuous(expand = c(0, 0), labels = \(x) paste0(x, "%")) +
+    guides(fill = guide_legend(nrow = 1)) +
+    labs(title = titulo, x = xlab, y = NULL, fill = NULL) +
+    theme(legend.position = "bottom", legend.key.size = unit(3, "mm"),
+          legend.text = element_text(size = 7.5), panel.grid = element_blank())
 }

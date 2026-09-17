@@ -33,3 +33,5 @@ reports/**/*.run.xml
 reports/**/*.synctex.gz
 reports/**/*.toc
 reports/**/*.xdv
+
+ProyectoAED.pdf

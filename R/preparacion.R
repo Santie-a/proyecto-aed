@@ -11,45 +11,23 @@ dataset <- ds |>
     # Demográficas
     ESTU_GENERO,
     ESTU_FECHANACIMIENTO,
-    ESTU_TIENEETNIA,
 
     # Hábitos y dedicación
     ESTU_DEDICACIONLECTURADIARIA,
-    ESTU_DEDICACIONINTERNET,
     ESTU_HORASSEMANATRABAJA,
 
     # Condiciones del hogar
     FAMI_ESTRATOVIVIENDA,
-    FAMI_PERSONASHOGAR,
-    FAMI_CUARTOSHOGAR,
-    FAMI_SITUACIONECONOMICA,
 
-    # Capital educativo y ocupacional
-    FAMI_EDUCACIONPADRE,
+    # Capital educativo y cultural del hogar
     FAMI_EDUCACIONMADRE,
-    FAMI_TRABAJOLABORPADRE,
-    FAMI_TRABAJOLABORMADRE,
     FAMI_NUMLIBROS,
 
-    # Bienes y acceso tecnológico
+    # Acceso tecnológico
     FAMI_TIENEINTERNET,
-    FAMI_TIENECOMPUTADOR,
-    FAMI_TIENEAUTOMOVIL,
-    FAMI_TIENEMOTOCICLETA,
-    FAMI_TIENELAVADORA,
-    FAMI_TIENEHORNOMICROOGAS,
-    FAMI_TIENECONSOLAVIDEOJUEGOS,
-
-    # Seguridad alimentaria
-    FAMI_COMELECHEDERIVADOS,
-    FAMI_COMECARNEPESCADOHUEVO,
-    FAMI_COMECEREALFRUTOSLEGUMBRE,
 
     # Establecimiento
     COLE_NATURALEZA,
-    COLE_CALENDARIO,
-    COLE_GENERO,
-    COLE_BILINGUE,
     COLE_JORNADA,
     COLE_AREA_UBICACION,
     COLE_DEPTO_UBICACION,
@@ -85,20 +63,11 @@ dataset <- dataset |>
 
 dataset <- dataset |>
   mutate(
-    across(
-      c(ESTU_TIENEETNIA, FAMI_TIENEINTERNET, FAMI_TIENECOMPUTADOR,
-        FAMI_TIENEAUTOMOVIL, FAMI_TIENEMOTOCICLETA, FAMI_TIENELAVADORA,
-        FAMI_TIENEHORNOMICROOGAS, FAMI_TIENECONSOLAVIDEOJUEGOS),
-      ~ factor(.x, levels = c("No", "Si"))
-    ),
-    COLE_BILINGUE = factor(COLE_BILINGUE, levels = c("N", "S"),
-                           labels = c("No", "Si")),
+    FAMI_TIENEINTERNET = factor(FAMI_TIENEINTERNET, levels = c("No", "Si")),
 
     ESTU_GENERO      = factor(ESTU_GENERO, levels = c("F", "M")),
     COLE_NATURALEZA  = factor(COLE_NATURALEZA, levels = c("OFICIAL", "NO OFICIAL")),
     COLE_AREA_UBICACION = factor(COLE_AREA_UBICACION, levels = c("URBANO", "RURAL")),
-    COLE_CALENDARIO  = factor(COLE_CALENDARIO, levels = c("A", "B", "OTRO")),
-    COLE_GENERO      = factor(COLE_GENERO, levels = c("MIXTO", "FEMENINO", "MASCULINO")),
     COLE_JORNADA     = factor(COLE_JORNADA,
                               levels = c("MAÑANA", "TARDE", "NOCHE",
                                          "UNICA", "COMPLETA", "SABATINA")),
@@ -110,12 +79,6 @@ dataset <- dataset |>
                  "Entre 30 y 60 minutos", "Entre 1 y 2 horas",
                  "Más de 2 horas")
     ),
-    ESTU_DEDICACIONINTERNET = factor(
-      ESTU_DEDICACIONINTERNET, ordered = TRUE,
-      levels = c("No Navega Internet", "30 minutos o menos",
-                 "Entre 30 y 60 minutos", "Entre 1 y 3 horas",
-                 "Más de 3 horas")
-    ),
     ESTU_HORASSEMANATRABAJA = factor(
       ESTU_HORASSEMANATRABAJA, ordered = TRUE,
       levels = c("0", "Menos de 10 horas", "Entre 11 y 20 horas",
@@ -126,37 +89,14 @@ dataset <- dataset |>
       FAMI_ESTRATOVIVIENDA, ordered = TRUE,
       levels = c("Sin Estrato", paste("Estrato", 1:6))
     ),
-    FAMI_PERSONASHOGAR = factor(
-      FAMI_PERSONASHOGAR, ordered = TRUE,
-      levels = c("1 a 2", "3 a 4", "5 a 6", "7 a 8", "9 o más")
-    ),
-    FAMI_CUARTOSHOGAR = factor(
-      FAMI_CUARTOSHOGAR, ordered = TRUE,
-      levels = c("Uno", "Dos", "Tres", "Cuatro", "Cinco", "Seis o mas")
-    ),
-    FAMI_SITUACIONECONOMICA = factor(
-      FAMI_SITUACIONECONOMICA, ordered = TRUE,
-      levels = c("Peor", "Igual", "Mejor")
-    ),
     FAMI_NUMLIBROS = factor(
       FAMI_NUMLIBROS, ordered = TRUE,
       levels = c("0 A 10 LIBROS", "11 A 25 LIBROS",
                  "26 A 100 LIBROS", "MÁS DE 100 LIBROS")
     ),
 
-    across(
-      c(FAMI_COMELECHEDERIVADOS, FAMI_COMECARNEPESCADOHUEVO,
-        FAMI_COMECEREALFRUTOSLEGUMBRE),
-      ~ factor(.x, ordered = TRUE,
-               levels = c("Nunca o rara vez comemos eso",
-                          "1 o 2 veces por semana",
-                          "3 a 5 veces por semana",
-                          "Todos o casi todos los días"))
-    ),
-
-    across(
-      c(FAMI_EDUCACIONPADRE, FAMI_EDUCACIONMADRE),
-      ~ factor(.x, levels = c(
+    FAMI_EDUCACIONMADRE = factor(
+      FAMI_EDUCACIONMADRE, levels = c(
           "Ninguno",
           "Primaria incompleta", "Primaria completa",
           "Secundaria (Bachillerato) incompleta",
@@ -164,24 +104,7 @@ dataset <- dataset |>
           "Técnica o tecnológica incompleta", "Técnica o tecnológica completa",
           "Educación profesional incompleta", "Educación profesional completa",
           "Postgrado",
-          "No sabe", "No Aplica"))
-    ),
-
-    across(
-      c(FAMI_TRABAJOLABORPADRE, FAMI_TRABAJOLABORMADRE),
-      ~ fct_recode(factor(.x),
-          "Negocio pequeño"   = "Es dueño de un negocio pequeño (tiene pocos empleados o no tiene, por ejemplo tienda, papelería, etc",
-          "Agrícola"          = "Es agricultor, pesquero o jornalero",
-          "Cuenta propia"     = "Trabaja por cuenta propia (por ejemplo plomero, electricista)",
-          "Operario"          = "Es operario de máquinas o conduce vehículos (taxita, chofer)",
-          "Profesional"       = "Trabaja como profesional (por ejemplo médico, abogado, ingeniero)",
-          "Servicios"         = "Trabaja como personal de limpieza, mantenimiento, seguridad o construcción",
-          "Hogar / no trabaja"= "Trabaja en el hogar, no trabaja o estudia",
-          "Ventas"            = "Es vendedor o trabaja en atención al público",
-          "Auxiliar admin."   = "Tiene un trabajo de tipo auxiliar administrativo (por ejemplo, secretario o asistente)",
-          "Directivo"         = "Es dueño de un negocio grande, tiene un cargo de nivel directivo o gerencial",
-          "Pensionado"        = "Pensionado",
-          "No sabe"           = "No sabe")
+          "No sabe", "No Aplica")
     ),
 
     ESTU_NSE_ESTABLECIMIENTO = factor(
@@ -199,7 +122,7 @@ dataset <- dataset |>
                as.Date(ESTU_FECHANACIMIENTO, tz = "America/Bogota"),
                units = "days")
     ) / 365.25,
-    EDAD = if_else(EDAD < 7 | EDAD > 100, NA_real_, EDAD)
+    EDAD = if_else(EDAD < 10 | EDAD > 100, NA_real_, EDAD)
   ) |>
   relocate(EDAD, .after = ESTU_FECHANACIMIENTO)
 
