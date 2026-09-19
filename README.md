@@ -53,6 +53,4 @@ El código que no hace parte de la exposición de las entregas vive en [`R/`](R)
   (tablas) y `.pdf`/`.png` (figuras) que consume el LaTeX.
 - `graficos.R` - tema visual y funciones reutilizables de tabla y gráfico, univariadas y
   bivariadas. Depende de `exportacion.R`.
-- `cifras.R` - arma la hoja de cifras (`cifras.txt`) con todos los números citados en el
-  documento.
 - `download.R` y `to_parquet.R` — obtención y conversión de la base.
