@@ -22,8 +22,8 @@ execute:
 # Presentación
 
 Este `.qmd` calcula y exporta las tablas y figuras que usa el PDF generado desde
-`reports/latex_entrega_2/main.tex`, junto con las cifras que el texto cita. Solo contiene lo
-que el documento usa. las tablas y figuras exportadas están listadas en `FIGURAS_DOC` y
+`reports/latex_entrega_2/main.tex`, junto con las cifras que el texto cita. Contiene lo que
+el documento usa y, como respaldo, las frecuencias completas de las variables cualitativas. Las tablas y figuras exportadas están listadas en `FIGURAS_DOC` y
 `TABLAS_DOC` dentro de `R/exportacion.R`.
 
 # 0. Preparación y configuración
@@ -86,7 +86,21 @@ tex_tabla_doble(
 )
 ```
 
-### 1.1.2 Variables ordinales del estudiante y del hogar
+### 1.1.2 Frecuencias de todas las variables cualitativas
+
+El documento solo presenta las variables de mayor relevancia para la pregunta; aquí quedan las
+tablas de frecuencias completas de las 12 cualitativas.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: frec-completas
+#| results: asis
+for (v in vars_cuali) {
+  print(knitr::kable(tabla_frec(v), digits = 2, caption = v))
+  cat("\n\n")
+}
+```
+
+### 1.1.3 Variables ordinales del estudiante y del hogar
 
 La educación de la madre se agrupa en cuatro niveles solo para la figura. En la base
 conserva sus 12 categorías.
@@ -131,7 +145,7 @@ exportar_fig(
   "fig-ordinales", alto = 3.4)
 ```
 
-### 1.1.3 Cifras citadas en el texto
+### 1.1.4 Cifras citadas en el texto
 
 Porcentajes que el documento menciona y que no aparecen directamente en la tabla ni en la
 figura: agregados de varios niveles y las variables que solo se describen en el texto.
@@ -258,6 +272,18 @@ exportar_fig((p_comp | p_inse) + plot_layout(widths = c(1.15, 1)),
 En el documento se describe con la tabla de resumen y con el percentil 99, que dimensiona la
 cola de estudiantes en extraedad.
 
+Puntajes nulos o cercanos a cero: solo un registro tenía `PUNT_GLOBAL = 0` (cero en las cinco
+pruebas) y se excluyó en `R/preparacion.R`. Los ceros en componentes aislados se conservan.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: ceros
+comp_cero <- rowSums(dataset[names(COMP)] == 0, na.rm = TRUE)
+list(registros_con_algun_cero = sum(comp_cero > 0),
+     pct = round(100 * mean(comp_cero > 0), 3),
+     ceros_por_prueba = colSums(dataset[names(COMP)] == 0, na.rm = TRUE),
+     global_min = min(dataset$PUNT_GLOBAL))
+```
+
 ```{r, warning=FALSE, message=FALSE}
 #| label: edad-p99
 quantile(dataset$EDAD, 0.99, na.rm = TRUE)
@@ -268,7 +294,7 @@ quantile(dataset$EDAD, 0.99, na.rm = TRUE)
 ## 2.1 Relaciones entre variables cuantitativas
 
 Matriz de correlaciones de las 8 cuantitativas y relación entre el INSE y el puntaje global.
-Con 478.666 observaciones un diagrama de dispersión clásico produce una mancha uniforme, por
+Con 478.665 observaciones un diagrama de dispersión clásico produce una mancha uniforme, por
 lo que se agrupan los puntos en hexágonos y el color codifica la densidad.
 
 ```{r, message=FALSE, warning=FALSE}
@@ -293,11 +319,11 @@ p_hex <- ggplot(dataset, aes(ESTU_INSE_INDIVIDUAL, PUNT_GLOBAL)) +
   labs(title = "INSE frente a puntaje global",
        subtitle = paste0("r = ", num(r_inse, 3)),
        x = "INSE", y = "Puntaje global", fill = "Estudiantes") +
-  theme(legend.key.width = unit(3, "mm"), legend.text = element_text(size = 7),
-        legend.title = element_text(size = 7.5))
+  theme(legend.key.width = unit(3, "mm"), legend.text = element_text(size = 8.5),
+        legend.title = element_text(size = 9))
 
-exportar_fig((p_corr | p_hex) + plot_layout(widths = c(1, 1.05)),
-             "fig-corr-inse", alto = 3.0)
+exportar_fig((p_corr | p_hex) + plot_layout(widths = c(1.1, 1)),
+             "fig-corr-inse", alto = 3.8)
 ```
 
 Cifras citadas en el texto.
@@ -319,7 +345,9 @@ M_comp
 ## 2.2 Relaciones entre las variables cualitativas y el desempeño
 
 Puntaje global según las cuatro comparaciones del planteamiento. La educación de la madre usa
-la misma agrupación de la sección 1.1.2, con etiquetas cortas para el panel.
+la misma agrupación de la sección 1.1.3, con etiquetas cortas para el panel. Por eso su
+$\eta^2$ en la figura (variable agrupada) es menor que el de la tabla de asociación, que usa
+las 12 categorías originales.
 
 ```{r, message=FALSE, warning=FALSE}
 #| label: fig-box-clave
@@ -333,15 +361,16 @@ naturaleza <- forcats::fct_recode(dataset$COLE_NATURALEZA,
                                   "Oficial" = "OFICIAL", "No\noficial" = "NO OFICIAL")
 area <- forcats::fct_recode(dataset$COLE_AREA_UBICACION,
                             "Urbana" = "URBANO", "Rural" = "RURAL")
-nse <- factor(dataset$ESTU_NSE_ESTABLECIMIENTO, ordered = FALSE)
+nse <- factor(dataset$ESTU_NSE_ESTABLECIMIENTO, ordered = FALSE,
+              labels = c("1", "2", "3", "4"))
 
 exportar_fig(
   (graf_box(nse, dataset$PUNT_GLOBAL, "NSE del colegio") |
    graf_box(naturaleza, dataset$PUNT_GLOBAL, "Naturaleza") + labs(y = NULL) |
    graf_box(area, dataset$PUNT_GLOBAL, "Zona") + labs(y = NULL) |
    graf_box(educ_corta, dataset$PUNT_GLOBAL, "Educación de la madre") + labs(y = NULL)) +
-    plot_layout(widths = c(1.1, 0.6, 0.6, 1.8)),
-  "fig-box-clave", alto = 2.6)
+    plot_layout(widths = c(1.05, 0.75, 0.75, 1.9)),
+  "fig-box-clave", alto = 3.0)
 ```
 
 Medias por grupo citadas en el texto.
@@ -416,14 +445,15 @@ dimnames(V) <- list(ETIQ_CUALI[vars_cuali], ETIQ_CUALI[vars_cuali])
 # Solo se rotulan los pares con V >= 0,20; el color muestra el resto
 p_v <- graf_matriz(V, "V de Cramér entre cualitativas", limites = c(0, 0.6),
                    colores = c("white", "#9CC0D8", "#123D5C"),
-                   min_etiqueta = 0.2, tam = 1.9)
+                   min_etiqueta = 0.2, tam = 2.7)
 
 p_nse <- graf_apilado(naturaleza, dataset$ESTU_NSE_ESTABLECIMIENTO,
                       "NSE según naturaleza") +
+  guides(fill = guide_legend(nrow = 2)) +
   theme(plot.margin = margin(5, 12, 5, 5))
 
-exportar_fig((p_v | p_nse) + plot_layout(widths = c(1.7, 1)),
-             "fig-cramer-nse", alto = 3.2)
+exportar_fig((p_v | p_nse) + plot_layout(widths = c(2.1, 1)),
+             "fig-cramer-nse", alto = 4.8)
 ```
 
 Pares citados en el texto.

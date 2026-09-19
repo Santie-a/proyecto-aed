@@ -69,6 +69,8 @@
 ]{biblatex}
 \DeclareLanguageMapping{spanish}{spanish-apa}
 \addbibresource{referencias.bib}
+% APA 7 en español: "Recuperado el [fecha], de [URL]".
+\DefineBibliographyStrings{spanish}{retrieved = {Recuperado}, from = {de}}
 
 % Formato APA 7 para la lista de referencias.
 \setlength{\bibhang}{0.5in}
@@ -107,7 +109,7 @@
 \newcommand{\portadaUniversidad}{Universidad del Rosario}
 \newcommand{\portadaPrograma}{Matemáticas Aplicadas y Ciencias de la Computación}
 \newcommand{\portadaAsignatura}{Análisis Estadístico de Datos}
-\newcommand{\portadaTitulo}{Determinantes socioeconómicos e institucionales del desempeño en las pruebas Saber 11 (2020-2)}
+\newcommand{\portadaTitulo}{Factores socioeconómicos e institucionales asociados al desempeño en las pruebas Saber 11 (2020-2)}
 \newcommand{\portadaIntegrantes}{%
   David Libreros\\
   Mateo Puente \\
@@ -158,56 +160,48 @@
 \setcounter{page}{1}
 
 \section{Introducción}
-El desempeño académico de los estudiantes de último grado de bachillerato en las
-pruebas Saber 11 en Colombia ha sido históricamente objeto de análisis por parte
-de instituciones educativas y entidades gubernamentales, debido al papel que puede
-ejercer como indicador de calidad educativa de la ciudad, la familia y la institución
-de donde proviene el estudiante, y de paso como insumo para el acceso a la educación
-superior por medio de incentivos del Estado o como indicador del nivel de enseñanza.
-Varios estudios respecto a este tema han señalado que el rendimiento en estas pruebas
+El desempeño académico de los estudiantes en las pruebas Saber 11 en Colombia ha sido históricamente objeto de
+análisis por parte de instituciones educativas y entidades gubernamentales, dado su papel como indicador de calidad
+educativa, de la ciudad, la familia y la institución
+del estudiante y como insumo para el acceso a la educación
+superior por incentivos del Estado o como indicador del nivel de enseñanza.
+Varios estudios han señalado que el rendimiento en estas pruebas
 no depende únicamente de factores individuales del estudiante, sino que está mediado
 por el contexto socioeconómico y familiar, las características no solo académicas sino
 también sociales del establecimiento educativo y la ubicación geográfica en la que este
 se encuentra \parencite{garciagil2021}.
 
 Este proyecto busca analizar los resultados de las pruebas Saber 11 del segundo semestre del
-2020 (ICFES), por medio de una base de datos oficial extraída del portal de datos abiertos del
+2020 (ICFES), por medio de una base de datos oficial extraída del portal de datos del
 Gobierno Nacional, con información sociodemográfica, familiar, institucional y de desempeño de
-aproximadamente 505.000 estudiantes de todo el territorio nacional. Resulta relevante estudiar
-este periodo porque corresponde al primer año en que la aplicación de las pruebas se realizó bajo
-condiciones de pandemia por el COVID-19,momento en el que las brechas relacionadas con los recursos tecnológicos y las
-condiciones del hogar (conectividad, materiales de estudio, acompañamiento familiar
-y académico) pudieron hacer más notorias las diferencias en el desempeño académico
-entre estudiantes de distintos contextos \parencite{cruz2016}.
-
-Comprender cómo se asocian estas condiciones con el desempeño académico permite
-aportar evidencia para el diseño de políticas de equidad educativa y para la
-distribución de recursos hacia poblaciones en mayores condiciones de vulnerabilidad.
+aproximadamente 505.000 estudiantes. Resulta relevante estudiar este periodo porque corresponde a la primera aplicación
+de las pruebas en condiciones de pandemia por el COVID-19, momento en el que las brechas relacionadas con los recursos
+tecnológicos y las condiciones del hogar (conectividad, materiales de estudio, acompañamiento familiar y académico)
+hicieron más notorias las diferencias en el desempeño académico entre estudiantes de distintos contextos \corr{\parencite{quintero2025}}.
 
 \section{Planteamiento del problema}
-A pesar de que las pruebas Saber 11 buscan medir de manera estandarizada las
+
+Aunque las pruebas Saber 11 buscan medir de manera estandarizada las
 competencias académicas de todos los estudiantes del país al finalizar el bachillerato,
 existe una problemática recurrente en la educación colombiana: los resultados no
-son homogéneos entre distintos grupos poblacionales. Los estudiantes de colegios
+son homogéneos entre grupos poblacionales. Los estudiantes de colegios
 oficiales frente a los de colegios privados, los de zonas rurales frente a los de
 zonas urbanas, o los provenientes de hogares con menor nivel socioeconómico, tienden
 a mostrar patrones marcados de diferencia en el desempeño \parencite{morales2024}.
 
-Sin embargo, gran parte de los análisis realizados sobre estos resultados se limita
-a comparaciones descriptivas simples (promedios por departamento o por tipo de colegio)
-, sin explorar de manera conjunta los múltiples factores socioeconómicos, geográficos e
-institucionales que inciden en el rendimiento de cada estudiante. Esto deja un vacío en
+Sin embargo, gran parte de los análisis realizados se limita a comparaciones descriptivas simples
+(promedios por departamento o por tipo de colegio), sin explorar de manera conjunta los múltiples
+factores socioeconómicos, geográficos e institucionales que inciden en el rendimiento de cada estudiante. Esto deja un vacío en
 la comprensión de \corr{qué variables presentan una asociación más fuerte con el desempeño
 y de si esa asociación se mantiene al examinarlas de manera conjunta} en lugar de forma aislada.
 
-Por tanto, este proyecto busca abordar dicho vacío explorando las conexiones y contrastes
-entre los individuos que presentan estas pruebas y su entorno, aplicando técnicas de estadística
-multivariada sobre la base de datos Saber 11 2020-2, con el fin de identificar los factores asociados
-a resultados poco equitativos en la población colombiana.
+Por tanto, este proyecto busca abordar dicho vacío aplicando técnicas de estadística multivariada sobre
+la base de datos seleccionada, con el fin de identificar los factores asociados a \corr{resultados}
+poco equitativos entre los grupos de la población colombiana.
 
 \section{Pregunta de investigación}
 ¿En qué medida el conjunto de características individuales, familiares, socioeconómicas,
-institucionales y geográficas registradas en la base de datos oficial Saber 11 2020-2 se
+institucionales y geográficas registradas en la base de datos Saber 11 2020-2 se
 asocia con el desempeño académico (puntaje global y por componente) de los estudiantes
 evaluados en Colombia?
 
@@ -216,7 +210,7 @@ evaluados en Colombia?
 \subsection{Objetivo general}
 Determinar el grado de asociación entre las características individuales, familiares,
 institucionales y geográficas de los estudiantes y sus colegios, y el desempeño académico
-obtenido por los estudiantes de último año de bachillerato en las pruebas Saber 11 del
+obtenido por \corr{los evaluados} en las pruebas Saber 11 del
 segundo semestre de 2020, mediante técnicas de estadística multivariada.
 
 \subsection{Objetivos específicos}
@@ -247,92 +241,25 @@ El alcance de esta última expresión se precisa en los siguientes términos: po
 intensidad entre la variable y el desempeño, cuantificada mediante medidas de tamaño
 de efecto y de varianza compartida. No se trata, por tanto, de un efecto causal ni del
 coeficiente de un modelo determinado: la ordenación de las variables según su
-asociación es un resultado descriptivo. La técnica multivariada con la que se abordará
-este objetivo se selecciona en la Entrega 3, a partir de los patrones que revele el
-análisis exploratorio.
+asociación es un resultado descriptivo.
 \end{correccion}
 
 \section{Revisión bibliográfica}
 
-El rendimiento académico de los estudiantes es un fenómeno que puede estar relacionado
-con diferentes características de su contexto individual, familiar y socioeconómico.
-En este sentido, la literatura previa permite identificar diversos factores que pueden
-estar asociados con el desempeño académico y que, por tanto, resultan relevantes para
-el análisis de los resultados obtenidos en las pruebas Saber 11.
+La literatura relaciona el rendimiento académico con el contexto individual, familiar y
+socioeconómico. \corr{\textcite{garciagil2021} analizan la asociación entre las condiciones
+socioeconómicas familiares y el desempeño en educación secundaria y bachillerato};
+\textcite{cruz2016} construyen un índice socioeconómico para estudiantes de Saber 11, y
+\textcite{morales2024} estudian la influencia del nivel socioeconómico familiar sobre el
+rendimiento. \corr{Para el periodo cercano a la pandemia, \textcite{quintero2025} comparan
+los resultados de 2019-2 y 2021-2 y encuentran una ampliación de las brechas entre colegios
+urbanos y rurales, así como entre oficiales y privados.}
 
-En primer lugar, el estudio presentado en la \textit{Revista INFAD de Psicología}
-analiza la relación existente entre las variables socioeconómicas familiares y el
-rendimiento académico de estudiantes de educación secundaria obligatoria y bachillerato.
-Esta investigación resulta relevante para el presente proyecto debido a que permite
-establecer un antecedente sobre la importancia de las condiciones socioeconómicas
-del entorno familiar en el desempeño académico de los estudiantes \parencite{garciagil2021}.
-A partir de este antecedente, resulta pertinente considerar dentro del análisis variables
-relacionadas con las condiciones familiares y socioeconómicas de los estudiantes evaluados
-en las pruebas Saber 11 2020-2.
-
-De manera más específica, \textcite{cruz2016} abordan la construcción de un índice
-socioeconómico familiar para los estudiantes que presentan la prueba Saber 11. Este
-trabajo constituye un antecedente especialmente relevante para el presente proyecto,
-debido a que utiliza información relacionada directamente con la población evaluada
-mediante las pruebas Saber 11 y estudia la relación entre las condiciones socioeconómicas
-de los estudiantes y su desempeño académico. La utilización de un índice socioeconómico
-permite, además, considerar que diferentes características del entorno familiar pueden
-estar relacionadas entre sí y que su análisis conjunto puede proporcionar una descripción
-más completa de las condiciones socioeconómicas de los estudiantes.
-
-Este antecedente resulta particularmente útil para la investigación propuesta, ya que
-la base de datos Saber 11 2020-2 contiene información relacionada con las características
-individuales y familiares de los estudiantes, así como variables asociadas con sus
-condiciones socioeconómicas. Por esta razón, la información disponible permite explorar
-si las diferencias en estas características se encuentran asociadas con las diferencias
-observadas en los resultados obtenidos en la prueba.
-
-Por otra parte, \textcite{morales2024} estudian la influencia del nivel socioeconómico
-de las familias sobre el rendimiento académico de los estudiantes. Este antecedente permite
-reforzar la importancia de analizar las condiciones socioeconómicas como una posible dimensión
-asociada con el desempeño académico. Asimismo, el estudio resulta de interés para el
-presente proyecto porque permite considerar que el rendimiento académico no
-necesariamente debe analizarse de manera aislada, sino teniendo en cuenta las condiciones
-del entorno en el que se desarrolla el estudiante.
-
-La revisión de estos antecedentes permite identificar una relación común entre las
-condiciones socioeconómicas y familiares y el rendimiento académico. Sin embargo,
-estos estudios no abarcan necesariamente todas las dimensiones disponibles en la base
-de datos seleccionada para el presente proyecto. En particular, la base Saber 11 2020-2
-permite incorporar simultáneamente características individuales, familiares, socioeconómicas
-, institucionales y geográficas, lo que posibilita ampliar el análisis hacia una perspectiva
-multivariada.
-
-La fuente de datos seleccionada corresponde al conjunto oficial de resultados
-anonimizados de las pruebas Saber 11 de Calendario A del año 2020, publicado
-por el \textcite{icfes2026} a través del portal de datos abiertos del Gobierno
-de Colombia. La disponibilidad de información sobre diferentes características
-de los estudiantes y de los establecimientos educativos permite analizar el
-desempeño académico desde múltiples dimensiones.
-
-En particular, esta base de datos resulta pertinente para el proyecto porque
-permite relacionar las características individuales y familiares de los estudiantes
-con los resultados obtenidos en las pruebas. De igual manera, la información
-disponible permite incorporar características relacionadas con el establecimiento
-educativo y con la ubicación geográfica, ampliando el análisis más allá de las
-condiciones exclusivamente individuales del estudiante.
-
-En consecuencia, los antecedentes revisados proporcionan fundamentos para considerar
-que las características socioeconómicas y familiares constituyen dimensiones relevantes
-para el estudio del rendimiento académico. A su vez, el trabajo relacionado directamente
-con las pruebas Saber 11 evidencia la utilidad de este tipo de información para
-estudiar la relación entre las condiciones socioeconómicas y los resultados académicos.
-La base de datos Saber 11 2020-2 permite ampliar este enfoque al incorporar de
-manera conjunta diferentes dimensiones del contexto de los estudiantes y de las
-instituciones educativas.
-
-Por lo anterior, la base de datos seleccionada presenta una alta pertinencia para
-la investigación propuesta, ya que permite estudiar la asociación entre un conjunto
-amplio de características y el desempeño académico de los estudiantes evaluados.
-Esto proporciona una base adecuada para la aplicación posterior de técnicas de
-estadística multivariada orientadas a identificar patrones, relaciones y variables
-que presenten una mayor asociación con el puntaje global y los resultados obtenidos
-en los diferentes componentes de las pruebas Saber 11.
+La investigación utiliza los resultados oficiales anonimizados de Saber 11, Calendario A de
+2020, publicados por \textcite{icfes2026}. Esta base permite integrar simultáneamente
+características individuales, familiares, socioeconómicas, institucionales y geográficas.
+Así, el proyecto amplía los antecedentes mediante un enfoque multivariado que examina
+conjuntamente los factores asociados al desempeño, en lugar de analizarlos de forma aislada.
 
 \section{Marco metodológico}
 
@@ -340,20 +267,23 @@ en los diferentes componentes de las pruebas Saber 11.
 
 Los datos provienen de la base de datos pública \textit{Saber 11-2020-2} publicada por
 el Instituto Colombiano para la Evaluación de la Educación (ICFES) a través del portal
-de Datos Abiertos del Gobierno Nacional de Colombia (Instituto Colombiano para la Evaluación
-de la Educación - ICFES, Bogotá D.C., 2026). La base corresponde a los resultados
+de Datos Abiertos del Gobierno Nacional de Colombia \corr{(Instituto Colombiano para la Evaluación
+de la Educación [ICFES], 2026)}. La base corresponde a los resultados
 consolidados de la aplicación de la prueba Saber 11 durante el segundo semestre
 calendario del año 2020, e incorpora información sociodemográfica del estudiante,
 características del hogar y del entorno familiar, atributos del establecimiento educativo
 donde culminó el bachillerato y, finalmente, los puntajes y percentiles obtenidos
 por el estudiante en cada una de las cinco pruebas que componen el examen, junto
-con el puntaje global y el percentil global. 
+con el puntaje global y el percentil global. \corr{La base procesada
+(\texttt{data/processed/saber11\_2020\_2.parquet}) y el código completo se entregan en el
+repositorio comprimido adjunto.} 
 
 \subsection{Población y muestra}
 
-La \textbf{población de referencia} corresponde a todos los estudiantes de último
-año de bachillerato del sistema educativo colombiano que presentaron la prueba
-Saber 11 durante el segundo semestre de 2020. La \textbf{población estudiada}
+La \textbf{población de referencia} corresponde a \corr{los evaluados en Saber 11
+durante el segundo semestre de 2020, mayoritariamente estudiantes de grado 11: el 50\,\%
+central tiene entre 16,9 y 18,2 años, aunque la base incluye aspirantes de mayor edad
+(hasta 79 años).} La \textbf{población estudiada}
 está constituida por la totalidad de registros efectivamente publicados por
 el ICFES para esa cohorte. Dado que la prueba Saber 11 es de
 carácter obligatorio para todos los estudiantes de grado undécimo en el
@@ -366,30 +296,22 @@ de la población examinada en ese período.
 El número total de registros contenidos en la base original corresponde a \textbf{504.872 observaciones}.
 
 \subsection{Número de variables}
-La base de datos original contiene un total de \textbf{81} variables por registro,
-de las cuales, tras el proceso de selección descrito en la sección~7,
-\corr{se conservaron \textbf{21} columnas: 12 variables cualitativas, 7 cuantitativas
+La base de datos original contiene un total de 81 variables por registro,
+de las cuales, tras el proceso de selección descrito en la sección~7,\  \corr{se conservaron 21 columnas: 12 variables cualitativas, 7 cuantitativas
 (el índice socioeconómico individual y los seis puntajes), la fecha de nacimiento y una
 columna empleada exclusivamente como criterio de filtro. A partir de la fecha de nacimiento
 se construye la variable derivada \texttt{EDAD}, de modo que el análisis trabaja con
-\textbf{20} variables: 12 cualitativas y 8 cuantitativas.}
+20 variables: 12 cualitativas y 8 cuantitativas.}
 
 \subsection{Contexto de recolección de los datos}
-La información fue recolectada por el ICFES en el marco del proceso de aplicación
-de la prueba Saber 11 correspondiente al segundo semestre del año 2020. El contexto
-de pandemia por COVID-19 que caracterizó ese período le otorga a la cohorte analizada
-un interés particular: la aplicación de la prueba se realizó bajo protocolos sanitarios
-especiales y bajo condiciones excepcionales de virtualidad, conectividad y
-acompañamiento familiar en los hogares colombianos, por lo que las variables
-socioeconómicas \corr{(acceso a internet, capital educativo y cultural del hogar,
-dedicación a la lectura)} \corr{pueden mostrar una asociación más marcada con el desempeño que
-en cohortes prepandémicas}. Adicionalmente, la base de datos corresponde a registros
-administrativos consolidados por el ICFES a partir de los formularios de inscripción
-y de las respuestas del examen, y no a una encuesta diseñada específicamente con fines
-de investigación; por tanto, su uso se enmarca en análisis secundarios de fuentes
-oficiales de carácter público. La manipulación y el análisis de los datos se realizan
-íntegramente en \texttt{R} mediante \textit{Quarto}, lo cual garantiza la trazabilidad y
-reproducibilidad del estudio.
+La información fue recolectada por el ICFES durante la aplicación de Saber 11 en el
+segundo semestre de 2020. Las condiciones excepcionales de pandemia, virtualidad y
+conectividad podrían acentuar la asociación del desempeño con variables socioeconómicas
+como el acceso a internet, el capital educativo y cultural y la lectura. La base reúne
+registros administrativos procedentes de la inscripción y del examen, por lo que el
+estudio constituye un análisis secundario de datos oficiales públicos. Su procesamiento
+se realiza en \texttt{R} mediante \textit{Quarto} para garantizar la trazabilidad y la
+reproducibilidad.
 
 \section{Descripción de las variables}
 
@@ -397,8 +319,8 @@ La base de datos Saber 11--2020-2 contiene un número elevado de columnas, no to
 igualmente relevantes para responder la pregunta de investigación planteada. Por esta
 razón, la selección de variables se realizó \corr{en dos etapas, una de criterio y otra
 apoyada en medidas de asociación}, conservando únicamente aquellas que aportan información sobre
-las características individuales del estudiante,su contexto familiar y socioeconómico, las particularidades
-del establecimiento educativoen el que cursa el último año de bachillerato y su desempeño académico. En la Tabla~\ref{tab:variables}
+las características individuales del estudiante, su contexto familiar y socioeconómico, las particularidades
+del establecimiento educativo en el que cursa el último año de bachillerato y su desempeño académico. En la Tabla~\ref{tab:variables}
 \corr{(Anexo~\ref{anexo:variables})} se describen las columnas conservadas, agrupadas por categoría.
 Las columnas descartadas, junto con la justificación de su exclusión, se \corr{resumen} a continuación.
 
@@ -419,12 +341,20 @@ revisar registros duplicados, datos faltantes y valores inválidos. A continuaci
 describe el proceso seguido en \texttt{R} junto con algunas observaciones sobre las decisiones tomadas.
 
 \subsection{Datos inválidos}
-Se comenzó revisando los registros validados por el ICFES, es decir, aquellos que
-no estuvieran marcados como \texttt{VALIDEZ OFICINA JURÍDICA}, categoría que
-corresponde a registros que en su momento estuvieron bajo investigación.
-Se trata de un procedimiento de rigor más que de un filtro con efecto apreciable,
-dado el tamaño de la base: se encontraron 44 entradas marcadas de esta manera,
-las cuales se descartaron.
+Se comenzó revisando la variable \texttt{ESTU\_ESTADOINVESTIGACION}. \corr{Según el
+diccionario de datos del ICFES, la categoría \texttt{VALIDEZ OFICINA JURÍDICA} identifica
+resultados cuya validez está condicionada a la conclusión de una actuación administrativa
+de la Oficina Asesora Jurídica por la presunta comisión de una conducta prohibida; el resto
+de los registros tiene el estado \texttt{PUBLICAR}. Se encontraron 44 entradas en esa
+situación, que se descartaron porque su resultado podría no ser válido.} Se trata de un
+procedimiento de rigor más que de un filtro con efecto apreciable, dado el tamaño de la base.
+
+\corr{También se revisaron los puntajes nulos o cercanos a cero. Un único registro tiene
+\texttt{PUNT\_GLOBAL} $= 0$, con cero en las cinco pruebas, lo que probablemente corresponde a una
+ausencia o anulación y no a un desempeño, por lo que se excluyó. El siguiente puntaje global
+es 23 y solo 15 registros quedan por debajo de 120. Los 257 registros (0,05\,\%) con cero en
+alguna prueba aislada, la mayoría en Inglés (203), se conservan porque tienen puntajes válidos
+en las demás pruebas y su peso en la base es despreciable.}
 
 \subsection{Datos duplicados}
 Utilizando la base completa, que incluye los identificadores, no se encontraron
@@ -433,114 +363,75 @@ registros duplicados: el identificador \texttt{ESTU\_CONSECUTIVO} es único en l
 
 \subsection{Datos faltantes}
 \begin{correccion}
-La revisión de los datos faltantes comenzó por cuantificar su magnitud. Entre las variables
-conservadas, las ausencias se concentran en las seis preguntas del cuestionario
-socioeconómico, con proporciones entre el 2,7\,\% (\texttt{FAMI\_EDUCACIONMADRE}, 13.485
-registros) y el 3,4\,\% (\texttt{ESTU\_HORAS SEMANATRABAJA}, 16.984 registros), y en
-\texttt{ESTU\_INSE\_INDIVIDUAL} (2,8\,\%). En las demás variables no superan el 0,1\,\%.
+Los valores faltantes se concentran en las seis preguntas socioeconómicas (2,7--3,4\,\%)
+y en \texttt{ESTU\_INSE\_INDIVIDUAL} (2,8\,\%); en las demás variables no superan el
+0,1\,\%. El 94,8\,\% respondió todo el cuestionario, el 2,8\,\% presentó ausencias
+puntuales (principalmente un solo ítem) y el 2,3\,\% no respondió ninguna pregunta,
+grupo que casi coincide con la falta del índice socioeconómico (11.839 de 11.846 casos).
 
-Al agrupar los registros según el número de esas seis preguntas sin responder se identificaron
-tres poblaciones diferenciadas: un 94,8\,\% con el cuestionario completo, un 2,8\,\% con
-ausencias puntuales (de las cuales el 84,1\,\% corresponde a un único ítem sin responder) y un
-2,3\,\% que no respondió ninguna. Este último grupo coincide casi en su totalidad con los
-registros sin valor en \texttt{ESTU\_INSE\_INDIVIDUAL} (11.839 de 11.846), lo cual es
-consistente con el hecho de que el ICFES calcula dicho índice a partir de esas mismas respuestas.
-
-La comparación de las características observables de los grupos muestra que la ausencia de
-información no es aleatoria. El grupo con no respuesta parcial registra un puntaje global
-promedio de 228,3 puntos, frente a 249,2 del grupo completo, y presenta una mayor proporción de
-estudiantes de colegios oficiales (81,2\,\% frente a 77,5\,\%) y de zonas rurales (21,3\,\%
-frente a 16,3\,\%). El mecanismo de pérdida se clasifica, en consecuencia, como
-\textit{missing at random} (MAR) y no como completamente aleatorio.
-
-Se conservan únicamente los registros sin valores faltantes en las seis variables del
-cuestionario socioeconómico (n = 478.666; 94,8\,\%), dado que las técnicas multivariadas
-previstas requieren observaciones completas y de esta manera se garantiza que todos los
-análisis se apliquen sobre la misma población. Las ausencias residuales (220 registros en
-\texttt{PUNT\_INGLES}, 7 en \texttt{ESTU\_GENERO} y 2 en \texttt{ESTU\_INSE\_INDIVIDUAL}) son
-despreciables y se excluyen en cada análisis que las involucra. Dado el sesgo documentado en
-el párrafo anterior, las brechas socioeconómicas que se estimen constituyen muy probablemente
-una cota inferior de las brechas reales.
+La pérdida de información se clasificó como \textit{missing at random} (MAR), pues la no
+respuesta parcial se relaciona con menor puntaje promedio (228,3 frente a 249,2), mayor
+presencia en colegios oficiales (81,2\,\% frente a 77,5\,\%) y zonas rurales (21,3\,\%
+frente a 16,3\,\%). Se conservaron los registros completos en las seis preguntas
+(94,8\,\%), \corr{que tras excluir el puntaje nulo de la sección~8.1 suman 478.665,} para
+aplicar los análisis sobre una población común. Las ausencias residuales
+en Inglés (220), género (7) e índice socioeconómico (2) se excluyen solo cuando corresponde.
+Debido al sesgo observado, las brechas estimadas \corr{probablemente están ligeramente
+subestimadas} respecto de las reales.
 \end{correccion}
 
 \subsection{Recodificación}
-A partir de la consulta de niveles realizada durante el análisis de datos faltantes,
-se recodificaron las columnas categóricas como factores, fijando explícitamente el
-orden de los niveles en las variables ordinales. Este paso resulta necesario para el
-manejo correcto de los datos en \texttt{R}: al declarar los niveles se evita que las
-funciones de modelamiento y graficación los ordenen alfabéticamente y se preserva la
-escala de las variables ordinales, condición indispensable para la interpretación de
-los ejes en las técnicas factoriales.
-
-Cabe señalar que las categorías \texttt{NO SABE} y \texttt{NO APLICA} en \corr{la variable
-de educación de la madre}, así como la categoría \texttt{SIN ESTRATO}, no se tratan como
-valores faltantes: corresponden a respuestas sustantivas (desconocimiento del nivel
-educativo, ausencia de la figura parental y vivienda no estratificada, respectivamente)
-y se conservan como categorías propias fuera de la escala ordinal.
+A partir de los niveles identificados, las variables categóricas se recodificaron como
+factores en \texttt{R}, respetando el orden de las categorías ordinales para evitar su
+ordenamiento alfabético y facilitar la interpretación de los análisis factoriales.
+Las respuestas \texttt{NO SABE}, \texttt{NO APLICA} y \texttt{SIN ESTRATO} se conservaron
+como categorías propias fuera de la escala ordinal, pues representan información válida
+y no valores faltantes.
 
 \subsection{Creación de la columna de edad}
-Dado que se dispone de la fecha de nacimiento, se construyó la variable \texttt{EDAD}
-como la diferencia entre esa fecha y la de aplicación de la prueba. La distribución
-resultante es coherente con la población objetivo, con una mediana de 17,4 años y un
-rango intercuartílico de 16,9 a 18,2 años. Se detectaron \corr{200 registros (0,042\,\%)}
-con valores fuera del rango plausible, definido entre 10 y 100 años, atribuibles a
-errores en la fecha registrada (entre ellos un valor centinela de 1899 en \corr{doce} casos).
-Dichos valores se codificaron como faltantes y su tratamiento se deja al criterio del
-método utilizado en cada análisis posterior.
+La variable \texttt{EDAD} se calculó a partir de la fecha de nacimiento y la aplicación
+de la prueba. Su mediana es de 17,4 años y el rango intercuartílico, de 16,9 a 18,2.
+Se identificaron \corr{267 registros (0,056\,\%)} fuera del rango plausible de \corr{13} a
+100 años, incluidos \corr{doce} casos con el valor centinela 1899; estos se codificaron
+como faltantes para tratarlos según el método empleado en cada análisis. \corr{El umbral
+inferior de 13 años es la menor edad razonable para presentar la prueba al terminar el
+grado 11; por debajo aparecen valores de 0 a 12 años, atribuibles a errores de digitación.
+El superior es amplio porque la base incluye aspirantes adultos.}
 
 \section{Conclusiones preliminares}
 
-Esta entrega corresponde a la fase de selección y preparación de la base de datos,
-por lo que las conclusiones se refieren a la calidad de la información disponible
-y a las condiciones bajo las cuales podrán aplicarse las técnicas multivariadas, y
-no aún a la relación entre las variables de estudio.
+Las conclusiones de esta fase se refieren a la calidad y preparación de la información,
+no todavía a las relaciones entre las variables. La base presenta alta calidad: no se
+hallaron duplicados, 44 registros tenían validez condicionada, uno tenía puntaje global
+nulo y solo el \corr{0,056\,\%} presentó fechas de nacimiento inválidas. Tras los filtros,
+la base quedó en \corr{478.665 registros y 20 variables: 12 cualitativas y 8 cuantitativas,
+incluida \texttt{EDAD}}.
 
-La base \textit{Saber 11--2020-2} presenta una calidad alta para un registro
-administrativo de gran escala: no se identificaron duplicados, únicamente 44
-registros resultaron no publicables y los valores inválidos de fecha de nacimiento
-representan apenas un \corr{0,042}\,\% del total. Tras aplicar los criterios de validez y completitud,
-la base de trabajo quedó constituida por \corr{478.666 registros y 20 variables de estudio
-(12 cualitativas y 8 cuantitativas, incluida la variable derivada \texttt{EDAD})}.
-
-El principal hallazgo de esta fase corresponde a la estructura de la no respuesta.
-La ausencia de información en el cuestionario socioeconómico no es aleatoria, sino
-que se concentra en estudiantes de menor desempeño y de colegios oficiales y rurales.
-La exclusión de estos registros, que es necesaria para aplicar técnicas que
-requieren observaciones completas, implica un sesgo de selección que debe
-tenerse presente en la interpretación de los resultados, siendo estas que las
-brechas que se estimen constituyen una cota inferior de las existentes en la población.
-\corr{Al restringir el filtro a las variables conservadas, este sesgo afecta a un 5,2\,\% de
-los registros válidos.}
+La no respuesta socioeconómica no es completamente aleatoria: se concentra en estudiantes
+de menor desempeño y de colegios oficiales y rurales. La eliminación necesaria de estos
+casos afecta al \corr{5,2\,\%} de los registros válidos y puede subestimar ligeramente las
+brechas reales.
 
 \begin{correccion}
-La selección de variables redujo el conjunto de cualitativas de 32 a 12 con una pérdida
-moderada de capacidad explicativa y eliminó las variables con categorías de frecuencia
-extrema (calendario, género y bilingüismo del colegio), cuyo uso en técnicas factoriales
-habría sido problemático. Persisten, sin embargo, categorías poco frecuentes en las variables
-conservadas: seis departamentos reúnen cada uno menos del 0,2\,\% de los registros (Guainía,
-con el 0,05\,\%, es el menor), la categoría \texttt{No Aplica} de la educación de la madre
-representa el 0,23\,\% y el estrato 6 el 0,62\,\%. Estas categorías concentran una inercia
-desproporcionada en las técnicas factoriales, por lo que se prevé agrupar los departamentos
-por regiones y fusionar o tratar como suplementarias las categorías minoritarias.
+La selección redujo las variables cualitativas de 32 a 12 y excluyó aquellas con categorías
+extremadamente escasas. Aún persisten categorías minoritarias: seis departamentos tienen
+menos del 0,2\,\% de los registros, \texttt{No Aplica} en educación materna representa el
+0,23\,\% y el estrato 6 el 0,62\,\%. Para evitar una influencia desproporcionada en las
+técnicas factoriales, se prevé agrupar departamentos y fusionar o tratar estas categorías
+como suplementarias.
 \end{correccion}
 
-Finalmente, dado que la unidad de análisis corresponde a un censo y que el número
-de observaciones supera las \corr{475.000}, las pruebas de significancia estadística
-resultarán poco informativas: diferencias sustantivamente irrelevantes
-alcanzarán significancia. La interpretación de los resultados deberá apoyarse
-en medidas de tamaño de efecto y en la proporción de varianza explicada.
-
-Con estas salvedades, la base seleccionada resulta adecuada para responder
-la pregunta planteada: \corr{las variables conservadas cubren las dimensiones individual,
-familiar, institucional y geográfica con poca redundancia entre sí}, el bloque de desempeño
-permite un tratamiento multivariado de la variable respuesta en lugar de reducirla al
-puntaje global, y el índice socioeconómico calculado por el ICFES ofrece un
-criterio de contraste externo para los resultados obtenidos.
+Por tratarse de un censo con más de \corr{475.000} observaciones, la significancia estadística
+será poco informativa; la interpretación debe priorizar tamaños de efecto y varianza explicada.
+Con estas salvedades, la base es adecuada para el análisis multivariado: cubre las dimensiones
+individual, familiar, institucional y geográfica, permite estudiar conjuntamente los cinco
+componentes del desempeño y dispone del índice socioeconómico del ICFES como contraste externo.
 
 \section{Análisis descriptivo univariado}
 
-Se describen las variables más relevantes para la pregunta de investigación sobre la base de
-trabajo de 478.666 estudiantes.
+Sobre la base de trabajo de 478.665 estudiantes, se presentan las variables con mayor
+relevancia para la pregunta de investigación; las tablas de frecuencias completas de las 12
+variables cualitativas están en el repositorio del proyecto (\texttt{reports/Entrega 2.html}).
 
 \subsection{Variables cualitativas}
 
@@ -563,7 +454,7 @@ NSE 2 y NSE 3 concentran el 90{,}3\,\% de los estudiantes y los extremos, cerca 
   \begin{minipage}[c]{0.4\textwidth}
     \captionsetup{justification=raggedright,singlelinecheck=false,skip=0pt}
     \caption{Distribución de las variables ordinales del estudiante y del hogar. La educación de
-    la madre se agrupa en cuatro niveles para la figura.}
+    la madre se agrupa en cuatro niveles más \textit{No sabe / No aplica} para la figura.}
     \label{fig:ordinales}
   \end{minipage}
 \end{figure}
@@ -574,7 +465,7 @@ lee como máximo media hora diaria por entretenimiento. La educación materna se
 en secundaria (41{,}9\,\%) y la mayoría no trabaja (60{,}4\,\%), aunque el 9{,}8\,\%
 trabaja más de veinte horas semanales. Predominan las mujeres (54{,}8\,\%) y la jornada
 más frecuente es la de la mañana (39{,}7\,\%). Bogotá y Antioquia reúnen el 29{,}4\,\%
-de los evaluados. Des esta manera, la baja representación de otros departamentos motiva agruparlos por
+de los evaluados. De esta manera, la baja representación de otros departamentos motiva agruparlos por
 regiones en el análisis multivariado.
 
 \FloatBarrier
@@ -615,11 +506,14 @@ puntos, con una desviación estándar de 48{,}4.
 \end{figure}
 
 En la escala común de 0 a 100 (Figura~\ref{fig:componentes-inse}), Lectura Crítica
-presenta la mayor media (52{,}3) y la menor dispersión relativa (CV de 19{,}3\,\%),
-mientras que Sociales y Ciudadanas tiene el mayor CV (24{,}7\,\%). Inglés registra
+presenta la mayor media (52{,}3) y la menor desviación estándar (10{,}08), mientras que
+Sociales y Ciudadanas tiene la mayor (11{,}93); como los cinco componentes comparten la
+escala, sus desviaciones son directamente comparables. El coeficiente de variación de la
+Tabla~\ref{tab:resumen-cuant} se reporta por completitud, pero en escalas de intervalo, como
+los puntajes y el índice socioeconómico, es solo indicativo, porque depende del origen de la escala. Inglés registra
 la menor media (47{,}1) y una cola de puntajes altos (asimetría de 1{,}04).
 El índice socioeconómico es casi simétrico, con media de 50{,}86 y desviación estándar
-de 9{,}46. La edad, en cambio, es muy asimétrica (8{,}25): el 50\,\% central se sitúa
+de 9{,}46. La edad, en cambio, es muy asimétrica (8{,}26): el 50\,\% central se sitúa
 entre 16{,}9 y 18{,}2 años y el 1\,\% supera los 29. Por ello, la mediana (17{,}4)
 representa mejor al estudiante típico que la media (17{,}9).
 
@@ -634,6 +528,8 @@ grupos, y entre cualitativas la $V$ de Cramér, que va de 0 (independencia) a 1 
 máxima). Ninguna de estas medidas implica causalidad.
 
 \subsection{Relaciones entre variables cuantitativas}
+
+Esta sección responde a los objetivos específicos 1 y 2.
 
 \begin{figure}[H]
   \centering
@@ -667,29 +563,31 @@ demás pruebas (0{,}39). La asociación de la edad con el puntaje global es déb
   \begin{minipage}[c]{0.4\textwidth}
     \captionsetup{justification=raggedright,singlelinecheck=false,skip=0pt}
     \caption{Puntaje global según el nivel socioeconómico, la naturaleza y la zona del colegio y
-    la educación de la madre. El punto naranja marca la media de cada grupo.}
+    la educación de la madre. El punto naranja marca la media de cada grupo. El $\eta^2$ de la
+    educación de la madre se calcula sobre la variable agrupada en cuatro niveles más
+    \textit{No sabe / No aplica}, por lo que
+    difiere del de la Tabla~\ref{tab:asociacion}, que usa sus 12 categorías.}
     \label{fig:box-clave}
   \end{minipage}
 \end{figure}
 
 \tabla{tab-asociacion}
 
-Con una desviación estándar de 48{,}4 puntos, una brecha de 30 equivale a unas 0{,}6
-desviaciones. La Figura~\ref{fig:box-clave} muestra diferencias importantes: los colegios
-no oficiales promedian 271{,}9 puntos frente a 242{,}6 de los oficiales, y los urbanos,
-253{,}3 frente a 228{,}0 de los rurales. La mayor brecha corresponde al NSE del colegio
-(217{,}9 en NSE 1 frente a 314{,}8 en NSE 4), y por educación materna, la media es 279{,}3
-con estudios profesionales o de posgrado y 228{,}8 con primaria o menos.
-
-La Tabla~\ref{tab:asociacion} compara todas las variables por prueba. En los primeros lugares se encuentra la asociación
-con el puntaje global el NSE del colegio (21{,}1\,\%), el índice socioeconómico individual
-(20{,}4\,\%) y la educación materna (14{,}2\,\%), mientras que lectura (2{,}5\,\%) y género
-(0{,}5\,\%) quedan entre las menores. Las asociaciones socioeconómicas son mayores en Inglés:
-el NSE del colegio alcanza el 24{,}4\,\% y su naturaleza el 9{,}4\,\% (frente al
-4{,}3--5{,}1\,\% de esta última en las demás pruebas). El género, de asociación casi nula
-con el puntaje global y Lectura Crítica, alcanza su máximo en Matemáticas (1{,}6\,\%),
-donde la edad también se asocia más. Estos contrastes justifican analizar el desempeño
-por áreas, no solo mediante el puntaje global.
+Esta sección responde a los objetivos específicos 1 a 3. La Figura~\ref{fig:box-clave}
+muestra brechas relevantes frente a una desviación estándar global de 48{,}4 puntos: los
+colegios no oficiales promedian 271{,}9 puntos frente a 242{,}6 de los oficiales; los urbanos,
+253{,}3 frente a 228{,}0 de los rurales; el promedio aumenta de 217{,}9 en NSE 1 a 314{,}8
+en NSE 4, y de 228{,}8 entre estudiantes cuyas madres tienen primaria o menos a 279{,}3
+cuando poseen estudios profesionales o de posgrado. La Tabla~\ref{tab:asociacion} confirma
+que las mayores asociaciones con el puntaje global corresponden al NSE del colegio
+(21{,}1\,\%), el índice socioeconómico individual (20{,}4\,\%) y la educación materna
+(14{,}2\,\%); la naturaleza del colegio ocupa una posición intermedia (6{,}4\,\%), mientras
+que la lectura (2{,}5\,\%) y el género (0{,}5\,\%) presentan asociaciones menores. Inglés
+es el componente más sensible al contexto socioeconómico: el NSE del colegio alcanza el
+24{,}4\,\% y su naturaleza el 9{,}4\,\%, frente al 4{,}3--5{,}1\,\% de esta última en las
+demás pruebas. Por su parte, el género alcanza su mayor asociación en Matemáticas
+(1{,}6\,\%), donde la edad también cobra mayor importancia. Estos contrastes muestran que
+el puntaje global oculta diferencias entre áreas y justifican analizar cada componente.
 
 \subsection{Relaciones entre variables cualitativas}
 
@@ -708,38 +606,20 @@ por áreas, no solo mediante el puntaje global.
   \end{minipage}
 \end{figure}
 
-Las asociaciones más fuertes se concentran en el bloque socioeconómico e institucional
-(Figura~\ref{fig:cramer-nse}). El nivel socioeconómico del colegio se asocia con su naturaleza
+Esta sección responde al objetivo específico 4. Las asociaciones más fuertes se concentran
+en el bloque socioeconómico e institucional (Figura~\ref{fig:cramer-nse}). El nivel socioeconómico del colegio se asocia con su naturaleza
 ($V = 0{,}54$), su zona (0{,}48) y el acceso a internet del hogar (0{,}46); la naturaleza, a su
 vez, con la jornada (0{,}53), y el estrato con el acceso a internet (0{,}38). Las barras apiladas
 muestran el par más asociado: el 20{,}9\,\% de los estudiantes de colegios no oficiales está en
 NSE 4, nivel que prácticamente no existe entre los oficiales, donde el 61{,}9\,\% está en NSE 2.
-En cambio, el género, la lectura y el trabajo no superan $V = 0{,}20$ con ninguna otra variable,
-por lo que aportan información distinta a la del contexto socioeconómico.
+En cambio, el género, la lectura y el trabajo no superan $V = 0{,}20$ con ninguna otra
+cualitativa, por lo que están solo débilmente asociados con ellas.
 
-Esta superposición explica por qué la suma de los porcentajes de la Tabla~\ref{tab:asociacion}
-supera el 100\,\%: buena parte de lo que cada variable comparte con el puntaje es común a varias
-de ellas. Separar la asociación propia de cada una exige examinarlas de manera conjunta, que es
-el propósito de la técnica multivariada de la Entrega 3.
+Esta superposición condiciona la lectura de la Tabla~\ref{tab:asociacion}, como se discute
+en la sección~\ref{sec:asociaciones}.
 
 \FloatBarrier
 \section{Interpretación de resultados}
-
-\corr{En general toca volver a hacer la interpretación de resultados.}
-
-%
-% El enunciado pide analizar los resultados desde el contexto del problema de
-% investigación, respondiendo preguntas como:
-%   - ¿Qué comportamiento presenta la variable?
-%   - ¿Existen diferencias importantes entre grupos?
-%   - ¿Se observan asociaciones entre variables?
-%   - ¿Qué hallazgos podrían ser relevantes para responder la pregunta de investigación?
-%
-% Insumos: las tablas de frecuencia y la tabla de medidas de resumen del análisis
-% univariado; los diagramas de caja con eta cuadrado de la sección 11.2; la tabla de
-% contingencia y la V de Cramér de la 11.3; y el ordenamiento de tamaños de efecto
-% de la sección \ref{sec:efectos}. Las cifras de todas las variables, incluidas las
-% que no tienen figura en este documento, están en reports/latex_entrega_2/cifras.txt.
 
 A continuación se interpretan los resultados del análisis exploratorio a la luz de la
 pregunta de investigación, donde se tendrán en cuenta los siguientes indicadores: el
@@ -748,182 +628,200 @@ detectadas y su lectura conjunta a partir del ordenamiento de tamaños de efecto
  
 \subsection{Comportamiento de las variables}
  
-En cuanto al análisis univariado, éste deja ver que la población evaluada enfrenta,
-en promedio, condiciones de vulnerabilidad considerables. Casi tres de cada diez (30\%)
-hogares no cuentan con internet y cerca de cuatro de cada diez (40\%) no tienen computador,
-justo en el semestre en que la educación se trasladó al hogar por la pandemia. A esto se
-suma una alta concentración en los estratos bajos (90{,}1\,\% de los estudiantes en estratos 1 a 3)
-y un capital educativo parental centrado en la secundaria, más bajo y peor conocido
-en el caso del padre que de la madre. En el plano institucional, el sistema evaluado
-es mayoritariamente oficial y urbano, con una fuerte concentración de colegios en los
-niveles socioeconómicos intermedios (NSE 2 y 3). Estas cifras confirman que las variables
-familiares e institucionales seleccionadas capturan una desigualdad estructural presente
-en una parte considerable de la población, lo cual es un requisito necesario para que
-dichas variables puedan explicar diferencias en el desempeño.
+El análisis univariado sugiere fuertemente que la población evaluada presenta, en promedio, condiciones
+de vulnerabilidad considerables y suficiente variabilidad en sus condiciones familiares e institucionales
+como para que estas puedan asociarse con diferencias en el desempeño entre los estudiantes. Existe representación
+apreciable tanto en los extremos de bajos recursos como en los de mayor nivel socioeconómico, condición necesaria
+para que los siguientes análisis tengan sentido.
  
 \subsection{Diferencias entre grupos}
  
-Las comparaciones de la Sección~\ref{sec:bivariado} muestran que el desempeño académico
-sí varía significativamente según el contexto del estudiante. Las brechas más grandes
-están asociadas al colegio y no al estudiante persé: la diferencia entre colegios no
-oficiales y oficiales es de cerca de 30 puntos, similar a la que separa a colegios
-urbanos de rurales, y equivale a poco más de media desviación estándar del puntaje
-global. El nivel socioeconómico del establecimiento resulta ser, de hecho, la variable
-con mayor capacidad para diferenciar grupos en todo el estudio ($\eta^2 = 0{,}210$),
-por encima del estrato de la vivienda del propio estudiante. Esto sugiere que el ambiente
-socioeconómico compartido por los compañeros de colegio se asocia más fuertemente con el
-desempeño que la condición individual del hogar. Adicionalmente, contrastando lo anterior,
-se ve que variables como el género muestran diferencias pequeñas en el puntaje global
-($\eta^2 = 0{,}005$), aunque no despreciables en componentes específicos como matemáticas,
-lo que respalda la decisión de analizar los puntajes por área y no solo el puntaje global.
+Como se observa en la Figura~\ref{fig:box-clave} y en la Tabla~\ref{tab:asociacion}, el
+desempeño académico varía de forma marcada según el contexto del estudiante. El nivel
+socioeconómico del establecimiento (21{,}1\,\%) y el índice socioeconómico individual
+(20{,}4\,\%) presentan los dos mayores tamaños de efecto del estudio. No es posible
+ordenarlos con precisión: el $\eta^2$ de una variable de cuatro categorías y el $r^2$ de una
+variable continua no miden exactamente lo mismo, y el NSE del establecimiento es un agregado
+de la condición socioeconómica de los propios estudiantes del colegio. Por ello, con estas
+medidas no es posible separar la asociación del entorno escolar de la del hogar; esa
+distinción queda para el análisis conjunto.
+
+Conviene distinguir, además, el tamaño de la brecha entre grupos de la proporción de varianza
+explicada. En la naturaleza y en la zona del colegio las brechas son apreciables (29{,}3 y
+25{,}3 puntos, unas 0{,}61 y 0{,}52 desviaciones estándar), pero la varianza explicada es
+pequeña en ambas (6{,}4\,\% y 3{,}8\,\%) porque los grupos están muy desbalanceados. Para
+una variable binaria, ${\eta^2 = p(1-p)(\Delta/\sigma)^2}$, donde $p$ es la proporción de uno de
+los grupos y $\Delta/\sigma$ la brecha en desviaciones estándar: con un 77{,}5\,\% de
+estudiantes en colegios oficiales, $\eta^2 = 0{,}775 \cdot 0{,}225 \cdot 0{,}61^2 \approx
+0{,}064$, mientras que la misma brecha con grupos de igual tamaño daría $\eta^2 \approx
+0{,}09$; el mismo cálculo con la proporción urbana (83{,}7\,\%) reproduce aproximadamente.
+En contraste, el género (0{,}5\,\%), la dedicación a la lectura (2{,}5\,\%), las horas de
+trabajo (4{,}8\,\%) y la edad (4{,}9\,\%) muestran diferencias menores en el puntaje global,
+pero no despreciables en componentes específicos, lo que respalda analizar los puntajes por
+área y no solo el global.
  
 \subsection{Asociaciones entre variables}
+\label{sec:asociaciones}
  
-El análisis de asociaciones evidencia que las condiciones de desventaja no actúan de
-manera aislada, sino que tienden a presentarse juntas. La relación entre el estrato de
-la vivienda y el acceso a internet es fuerte ($V = 0{,}382$), y la asociación más intensa
-de todo el bloque cualitativo es la que existe entre la naturaleza del colegio (oficial o
-no oficial) y su nivel socioeconómico ($V = 0{,}544$), lo que indica que ambas variables
-describen en buena parte el mismo fenómeno visto desde dos ángulos distintos. En el plano
-cuantitativo, el índice socioeconómico individual calculado por el ICFES muestra una
-asociación moderada con el puntaje global ($r = 0{,}452$), consistente con la idea
-de que el contexto socioeconómico influye en el desempeño sin determinarlo por
-completo: existen estudiantes de bajos recursos con puntajes altos y viceversa.
-Estos hallazgos son importantes porque anticipan un problema que debe resolverse
-en la siguiente entrega: si las variables explicativas están correlacionadas entre
-sí, no es posible sumar sus efectos individuales sin incurrir en redundancia,
-lo que justifica recurrir a una técnica multivariada capaz de resumir esta estructura
-compartida en unos pocos ejes (Los métodos más apropiados podrían ser PCA para cuantitativas y
-MCA para cualitativas).
+Las condiciones de desventaja no se presentan de manera aislada, sino que tienden a aparecer
+juntas, como se ve en la Figura~\ref{fig:cramer-nse}: la relación entre el estrato de la
+vivienda, el acceso a internet, la naturaleza y el nivel socioeconómico del colegio es fuerte.
+Esta fuerte asociación explica por qué la suma de los porcentajes de la
+Tabla~\ref{tab:asociacion} supera el 100\,\%: gran parte de lo que cada variable comparte con
+el puntaje global es común a varias de ellas, por lo que no es posible sumar sus asociaciones
+individuales sin incurrir en redundancia. Separar la asociación propia de cada una exige
+examinarlas de manera conjunta, que es el propósito de la técnica multivariada de la Entrega 3.
  
 \subsection{Hallazgos relevantes para la pregunta de investigación}
  
-El ordenamiento de tamaños de efecto de la \corr{Toca cambiar eso fijo} sintetiza el
-hallazgo central de esta fase exploratoria: ninguna variable, por sí sola, explica
-más de una quinta parte de la varianza del puntaje global. El nivel socioeconómico
-del establecimiento (20{,}96\,\%) y el índice socioeconómico individual (20{,}42\,\%)
-encabezan la lista, seguidos de cerca por la educación de la madre (14{,}15\,\%)
-y la del padre (12{,}57\,\%), todas ellas por encima de cualquier característica
-puramente individual del estudiante. Llama la atención que variables materiales simples,
-como tener computador (9{,}86\,\%) o internet (9{,}16\,\%) en el hogar, recuperen una
-proporción de varianza comparable e incluso mayor a la del estrato de la vivienda
-(7{,}36\,\%), pese a ser indicadores binarios y no índices compuestos. En conjunto,
-esta evidencia responde parcialmente a la pregunta de investigación: el desempeño
-en las pruebas Saber 11 2020-2 no depende de un factor dominante, sino de la
-acumulación de varias condiciones socioeconómicas, familiares e institucionales
-que están parcialmente solapadas entre sí. Esto confirma la pertinencia del
-enfoque multivariado planteado en los objetivos del proyecto, ya que solo una
-técnica que considere el conjunto de variables de manera conjunta permitirá
-establecer cuáles de ellas conservan una asociación relevante con el desempeño
-una vez controladas las demás.
+El ordenamiento de tamaños de efecto de la Tabla~\ref{tab:asociacion} sintetiza el
+hallazgo central de esta fase exploratoria: la variable con mayor asociación explica apenas
+poco más de una quinta parte de la varianza del puntaje global. El nivel socioeconómico
+del establecimiento (21{,}1\,\%) y el índice socioeconómico individual (20{,}4\,\%)
+encabezan la lista, seguidos de cerca por la educación de la madre (14{,}2\,\%), todas ellas por encima de cualquier otra característica. En conjunto, esto responde parcialmente a la pregunta de investigación: el desempeño en las pruebas Saber 11 no se asocia con un único factor dominante, sino con la acumulación de múltiples condiciones socioeconómicas, familiares e institucionales que parcialmente coinciden entre sí. Esto confirma la pertinencia del enfoque multivariado planteado, ya que solo una técnica que considere las variables de manera conjunta permitirá establecer cuáles de ellas conservan una asociación relevante con el desempeño una vez consideradas las demás.
 
 \section{Conclusiones del análisis exploratorio}
 
-% Entre tres y cinco conclusiones derivadas del análisis descriptivo y exploratorio,
-% que sinteticen los principales hallazgos y evidencien cómo contribuyen a comprender
-% el problema de investigación.
-%
-% En esta etapa no se espera responder la pregunta de investigación, sino identificar
-% patrones que sirvan de base para la aplicación de las técnicas de estadística
-% multivariada en la Entrega 3.
+El análisis descriptivo y exploratorio de la base \textit{Saber 11--2020-2} permite
+formular las siguientes conclusiones, que sintetizan los patrones observados y orientan
+la aplicación de las técnicas multivariadas de la Entrega 3.
+
+\begin{enumerate}[leftmargin=1.8em, itemsep=0.6em, topsep=0.4em]
+
+  \item \textbf{El contexto socioeconómico lidera en varianza explicada, y
+  su componente institucional es comparable al individual.} El nivel socioeconómico del
+  establecimiento explica el 21{,}1\,\% de la varianza del puntaje global y el índice
+  socioeconómico individual el 20{,}4\,\% (Tabla~\ref{tab:asociacion}), valores que superan
+  a los de cualquier otra variable considerada. La brecha entre los extremos del NSE del
+  colegio, de 217{,}9 puntos en NSE 1 frente a 314{,}8 en NSE 4, equivale a unas dos
+  desviaciones estándar del puntaje global. Como el NSE del establecimiento agrega la
+  condición socioeconómica de sus propios estudiantes, estas medidas no permiten separar la
+  asociación del entorno escolar de la del hogar (sección~12.2). Por esta
+  razón, el bloque socioeconómico, en sus dos niveles, debe ser el objeto de estudio principal a futuro.
+  \item \textbf{Ninguna variable domina por sí sola, pero las condiciones socioeconómicas
+  se acumulan.} La variable con mayor asociación no alcanza a explicar una cuarta parte de
+  la varianza del puntaje global, y las condiciones de desventaja se presentan de forma
+  conjunta (sección~\ref{sec:asociaciones}), de modo que el desempeño se
+  asocia con una acumulación de circunstancias y no con un factor aislado. Separar el aporte
+  propio de cada variable de la parte que comparte con las demás requiere una técnica que
+  las trate de manera simultánea, lo cual confirma la pertinencia del enfoque multivariado
+  propuesto.
+
+  \item \textbf{Inglés presenta la mayor asociación con el contexto socioeconómico.}
+  El NSE del establecimiento explica el 24{,}4\,\% de su varianza, el índice socioeconómico
+  individual el 22{,}2\,\% y la naturaleza del colegio el 9{,}4\,\%, frente al
+  4{,}3--5{,}1\,\% de esta última en las demás pruebas. Además, Inglés es el componente
+  menos correlacionado con los otros, lo que indica que el puntaje global oculta diferencias
+  relevantes y justifica analizar el desempeño como un vector de cinco componentes.
+
+  \item \textbf{Los hábitos y las características individuales del estudiante presentan
+  asociaciones débiles con el puntaje y poca redundancia con las demás variables
+  cualitativas.} La dedicación diaria a la lectura explica el 2{,}5\,\% de la varianza del
+  puntaje global y solo el 2{,}4\,\% de la varianza de la prueba de Lectura Crítica, el
+  género el 0{,}5\,\% y las horas semanales de trabajo el 4{,}8\,\%. Estas tres variables no
+  superan $V = 0{,}20$ con ninguna otra cualitativa, es decir, están débilmente asociadas
+  con las demás variables cualitativas. Su asociación con el puntaje es pequeña,
+  aunque se concentra en componentes específicos: el género alcanza su máximo en Matemáticas
+  (1{,}6\,\%) y la lectura diaria en Sociales y Ciudadanas (2{,}8\,\%). Conservarlas en el
+  análisis multivariado resulta útil por su escasa redundancia; como no definen la estructura
+  socioeconómica, podrían tratarse como suplementarias en un análisis factorial.
+
+
+\end{enumerate}
+
+En conjunto, el análisis exploratorio muestra un desempeño estructurado por un gradiente
+socioeconómico que opera de manera simultánea en el hogar y en el establecimiento, con una
+intensidad que varía entre componentes de la prueba y con una superposición amplia entre las
+variables que lo describen. Estos patrones definen la agenda de la Entrega 3: cuantificar el
+aporte propio de cada dimensión una vez consideradas las demás y examinar la estructura
+conjunta del desempeño y del contexto mediante técnicas factoriales.
 
 \newpage
 
 \section{Declaración de uso de inteligencia artificial}
 Se usaron herramientas de Inteligencia Artificial (IA) para el desarrollo de esta entrega, para fines como mejorar la redacción, 
 depurar código, automatizar cosas como exportar tablas y figuras a \LaTeX, manejo de pipelines, definir estilos para mantener consistencia,
-documentación sobre el uso de herramientas como Quarto y R, y replantear enfoques o decisiones posiblemente erroneas.
+documentación sobre el uso de herramientas como Quarto y R, replantear enfoques o decisiones posiblemente erróneas y revisar
+el documento contra la guía de la entrega para verificar que cumpliera sus requisitos.
 En general se buscó con estas herramientas elevar la calidad del trabajo, manteniendo estructuralmente el criterio personal.
 
 Entre las herramientas utilizadas se encuentran:
 \begin{itemize}
   \item Claude (Opus 5)
-  \item Prism
+  \item OpenAI Prism
 \end{itemize}
 
 \section{Variables seleccionadas}
 \label{anexo:variables}
 
+\begingroup\small\setlength{\tabcolsep}{4pt}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
-\begin{longtable}{L{2.2cm} L{6.5cm} L{6.3cm}}
+\begin{longtable}{L{5.8cm} L{2.0cm} L{1.6cm} L{5.8cm}}
   \caption{Descripción de las variables seleccionadas para el análisis.}\label{tab:variables}\\
   \toprule
-  \textbf{Categoría} & \textbf{Variable} & \textbf{Descripción} \\
+  \textbf{Variable} & \textbf{Tipo} & \textbf{Escala} & \textbf{Descripción} \\
   \midrule
   \endfirsthead
 
   \midrule
-  \multicolumn{3}{r}{\textit{Continúa en la página siguiente...}} \\
+  \multicolumn{4}{r}{\textit{Continúa en la página siguiente...}} \\
   \midrule
-  \textbf{Categoría} & \textbf{Variable} & \textbf{Descripción} \\
+  \textbf{Variable} & \textbf{Tipo} & \textbf{Escala} & \textbf{Descripción} \\
   \midrule
   \endhead
 
   \midrule
-  \multicolumn{3}{r}{\textit{Continúa en la página siguiente...}} \\
+  \multicolumn{4}{r}{\textit{Continúa en la página siguiente...}} \\
   \endfoot
 
   \bottomrule
   \endlastfoot
 
-  % --- Características demográficas ---
   \midrule
-  \multicolumn{3}{l}{\textit{Características demográficas}} \\
-  ESTU & \texttt{ESTU\_GENERO} & Género reportado por el estudiante. \\
-  ESTU & \texttt{ESTU\_FECHANACIMIENTO} & Fecha de nacimiento; se utiliza para calcular la edad al momento de presentar la prueba. \\
+  \multicolumn{4}{l}{\textit{Características demográficas}} \\
+  \texttt{ESTU\_GENERO} & Cualitativa & Nominal & Género reportado por el estudiante. \\
+  \texttt{ESTU\_FECHANACIMIENTO} & Cuantitativa & Intervalo & Fecha de nacimiento; se usa solo para calcular la edad. \\
+  \texttt{EDAD} & Cuantitativa & Razón & Variable derivada: edad al 7 de noviembre de 2020, primera fecha de aplicación \\
 
-    % --- Hábitos y dedicación ---
   \midrule
-  \multicolumn{3}{l}{\textit{Hábitos y dedicación}} \\
-  ESTU & \texttt{ESTU\_DEDICACIONLECTURADIARIA} & Tiempo diario dedicado a la lectura fuera del ámbito escolar. \\
-  ESTU & \texttt{ESTU\_HORASSEMANATRABAJA} & Número de horas semanales dedicadas a trabajo remunerado. \\
+  \multicolumn{4}{l}{\textit{Hábitos y dedicación}} \\
+  \texttt{ESTU\_DEDICACIONLECTURADIARIA} & Cualitativa & Ordinal & Tiempo diario dedicado a la lectura por entretenimiento. \\
+  \texttt{ESTU\_HORASSEMANATRABAJA} & Cualitativa & Ordinal & Horas semanales de trabajo remunerado, en rangos. \\
 
-  % --- Condiciones del hogar ---
   \midrule
-  \multicolumn{3}{l}{\textit{Condiciones del hogar}} \\
-  FAMI & \texttt{FAMI\_ESTRATOVIVIENDA} & Estrato socioeconómico de la vivienda (1 a 6, según clasificación del DANE). \\
+  \multicolumn{4}{l}{\textit{Condiciones del hogar}} \\
+  \texttt{FAMI\_ESTRATOVIVIENDA} & Cualitativa & Ordinal & Estrato socioeconómico de la vivienda (1 a 6, o sin estrato). \\
+  \texttt{FAMI\_EDUCACIONMADRE} & Cualitativa & Ordinal & Nivel educativo máximo alcanzado por la madre o figura materna. \\
+  \texttt{FAMI\_NUMLIBROS} & Cualitativa & Ordinal & Cantidad aproximada de libros en el hogar. \\
+  \texttt{FAMI\_TIENEINTERNET} & Cualitativa & Nominal & Indica si el hogar cuenta con servicio de internet. \\
 
-  % --- Capital educativo y cultural del hogar ---
   \midrule
-  \multicolumn{3}{l}{\textit{Capital educativo y cultural del hogar}} \\
-  FAMI & \texttt{FAMI\_EDUCACIONMADRE} & Nivel educativo máximo alcanzado por la madre o figura materna (ordinal). \\
-  FAMI & \texttt{FAMI\_NUMLIBROS} & Cantidad aproximada de libros presentes en el hogar (ordinal). \\
+  \multicolumn{4}{l}{\textit{Establecimiento educativo}} \\
+  \texttt{COLE\_NATURALEZA} & Cualitativa & Nominal & Naturaleza del colegio (oficial o no oficial). \\
+  \texttt{COLE\_JORNADA} & Cualitativa & Nominal & Jornada del colegio (mañana, tarde, noche, única, completa, sabatina). \\
+  \texttt{COLE\_AREA\_UBICACION} & Cualitativa & Nominal & Zona de ubicación del colegio (urbana o rural). \\
+  \texttt{COLE\_DEPTO\_UBICACION} & Cualitativa & Nominal & Departamento donde se ubica el colegio. \\
 
-  % --- Acceso tecnológico ---
   \midrule
-  \multicolumn{3}{l}{\textit{Acceso tecnológico}} \\
-  FAMI & \texttt{FAMI\_TIENEINTERNET} & Indica si el hogar cuenta con servicio de internet. \\
+  \multicolumn{4}{l}{\textit{Índices socioeconómicos}} \\
+  \texttt{ESTU\_INSE\_INDIVIDUAL} & Cuantitativa & Intervalo & Índice socioeconómico individual calculado por el ICFES. \\
+  \texttt{ESTU\_NSE\_ESTABLECIMIENTO} & Cualitativa & Ordinal & Nivel socioeconómico del establecimiento (NSE 1 a 4). \\
 
-  % --- Establecimiento educativo ---
   \midrule
-  \multicolumn{3}{l}{\textit{Características del establecimiento educativo}} \\
-  COLE & \texttt{COLE\_NATURALEZA} & Naturaleza jurídica del colegio (oficial o no oficial). \\
-  COLE & \texttt{COLE\_JORNADA} & Jornada en la que funciona el colegio (mañana, tarde, noche, única, completa, sabatina). \\
-  COLE & \texttt{COLE\_AREA\_UBICACION} & Área de ubicación del colegio (urbana o rural). \\
-  COLE & \texttt{COLE\_DEPTO\_UBICACION} & Departamento donde se encuentra ubicado el colegio. \\
+  \multicolumn{4}{l}{\textit{Desempeño académico (variables de respuesta)}} \\
+  \texttt{PUNT\_LECTURA\_CRITICA} & Cuantitativa & Intervalo & Puntaje en lectura crítica (0--100). \\
+  \texttt{PUNT\_MATEMATICAS} & Cuantitativa & Intervalo & Puntaje en matemáticas (0--100). \\
+  \texttt{PUNT\_C\_NATURALES} & Cuantitativa & Intervalo & Puntaje en ciencias naturales (0--100). \\
+  \texttt{PUNT\_SOCIALES\_CIUDADANAS} & Cuantitativa & Intervalo & Puntaje en sociales y ciudadanas (0--100). \\
+  \texttt{PUNT\_INGLES} & Cuantitativa & Intervalo & Puntaje en inglés (0--100). \\
+  \texttt{PUNT\_GLOBAL} & Cuantitativa & Intervalo & Puntaje global (0--500), promedio ponderado de las cinco pruebas. \\
 
-  % --- Índices socioeconómicos ---
   \midrule
-  \multicolumn{3}{l}{\textit{Índices socioeconómicos}} \\
-  ESTU & \texttt{ESTU\_INSE\_INDIVIDUAL} & Índice socioeconómico individual calculado por el ICFES (continuo). \\
-  ESTU & \texttt{ESTU\_NSE\_ESTABLECIMIENTO} & Nivel socioeconómico promedio del establecimiento educativo (ordinal). \\
-
-  % --- Desempeño académico ---
-  \midrule
-  \multicolumn{3}{l}{\textit{Desempeño académico (variables de respuesta)}} \\
-  PUNT & \texttt{PUNT\_LECTURA\_CRITICA} & Puntaje obtenido en la prueba de lectura crítica (0--100). \\
-  PUNT & \texttt{PUNT\_MATEMATICAS} & Puntaje obtenido en la prueba de matemáticas (0--100). \\
-  PUNT & \texttt{PUNT\_C\_NATURALES} & Puntaje obtenido en la prueba de ciencias naturales (0--100). \\
-  PUNT & \texttt{PUNT\_SOCIALES\_CIUDADANAS} & Puntaje obtenido en la prueba de sociales y ciudadanas (0--100). \\
-  PUNT & \texttt{PUNT\_INGLES} & Puntaje obtenido en la prueba de inglés (0--100). \\
-  PUNT & \texttt{PUNT\_GLOBAL} & Puntaje global del estudiante, calculado como promedio ponderado de las cinco pruebas. \\
-
-  % --- Criterio de filtro ---
-  \midrule
-  \multicolumn{3}{l}{\textit{Criterio de filtro}} \\
-  ESTU & \texttt{ESTU\_ESTADOINVESTIGACION} & Estado del registro dentro del proceso de investigación del ICFES; se
-  conservan únicamente los registros publicables. \\
+  \multicolumn{4}{l}{\textit{Criterio de filtro}} \\
+  \texttt{ESTU\_ESTADOINVESTIGACION} & Cualitativa & Nominal & Estado del registro; se conservan solo los registros con estado \texttt{PUBLICAR}. \\
 \end{longtable}
+\endgroup
+\noindent{\footnotesize Los puntajes y el INSE se tratan como escalas de intervalo porque su cero no indica ausencia del atributo. \texttt{EDAD} es la única variable derivada.\par}
 
 \printbibliography[title={Referencias}]
 

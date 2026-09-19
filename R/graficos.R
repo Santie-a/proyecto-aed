@@ -82,7 +82,7 @@ graf_ord_apilado <- function(x, titulo, gris = character(0)) {
     geom_col(width = 0.75, position = position_stack(reverse = TRUE)) +
     geom_text(aes(label = ifelse(pct >= 5, paste0(num(pct, 1), "%"), ""), colour = txt),
               position = position_stack(vjust = 0.5, reverse = TRUE),
-              size = 2.5, family = "Times New Roman") +
+              size = 3.2, family = "Times New Roman") +
     scale_fill_manual(values = cols) +
     scale_colour_identity() +
     scale_x_continuous(expand = c(0, 0)) +
@@ -90,9 +90,9 @@ graf_ord_apilado <- function(x, titulo, gris = character(0)) {
     labs(title = titulo, x = NULL, y = NULL, fill = NULL) +
     theme(legend.position = "bottom", legend.justification = "left",
           legend.margin = margin(0, 0, 0, 0), legend.box.spacing = unit(1, "mm"),
-          legend.key.size = unit(3, "mm"), legend.text = element_text(size = 7.5),
+          legend.key.size = unit(3.5, "mm"), legend.text = element_text(size = 9),
           axis.text = element_blank(), panel.grid = element_blank(),
-          plot.title = element_text(size = 9),
+          plot.title = element_text(size = 10),
           plot.margin = margin(2, 4, 8, 4))
 }
 
@@ -209,7 +209,7 @@ graf_box <- function(cat, y, titulo, ylab = "Puntaje global") {
     labs(title = titulo,
          subtitle = paste0("\u03b7\u00b2 = ", num(eta2(d$y, d$cat), 3)),
          x = NULL, y = ylab) +
-    theme(axis.text.x = element_text(size = 7.5))
+    theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 9))
 }
 
 # Matriz triangular inferior (correlaciones o V de Cramér) con etiquetas en
@@ -217,7 +217,7 @@ graf_box <- function(cat, y, titulo, ylab = "Puntaje global") {
 # densas para que las etiquetas no se encimen; el color los sigue mostrando.
 graf_matriz <- function(M, titulo, limites = c(-1, 1),
                         colores = c(NARANJA, "white", AZUL),
-                        min_etiqueta = 0, tam = 2.4, dig = 2) {
+                        min_etiqueta = 0, tam = 3.1, dig = 2) {
   niv <- rownames(M)
   d <- as.data.frame(as.table(M), stringsAsFactors = FALSE) |>
     stats::setNames(c("fila", "col", "valor")) |>
@@ -239,8 +239,8 @@ graf_matriz <- function(M, titulo, limites = c(-1, 1),
     coord_fixed() +
     labs(title = titulo, x = NULL, y = NULL) +
     theme(panel.grid = element_blank(),
-          axis.text.x = element_text(angle = 45, hjust = 1, size = 7.5),
-          axis.text.y = element_text(size = 7.5))
+          axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+          axis.text.y = element_text(size = 9))
 }
 
 # Barras apiladas al 100 %: la forma adecuada de comparar composición cuando
@@ -261,12 +261,13 @@ graf_apilado <- function(a, b, titulo, xlab = NULL) {
     geom_col(width = 0.7, position = position_stack(reverse = TRUE)) +
     geom_text(aes(label = ifelse(pct >= 9, paste0(num(pct, 1), "%"), ""), colour = txt),
               position = position_stack(vjust = 0.5, reverse = TRUE),
-              size = 2.4, family = "Times New Roman") +
+              size = 3.1, family = "Times New Roman") +
     scale_fill_manual(values = cols) +
     scale_colour_identity() +
     scale_x_continuous(expand = c(0, 0), labels = \(x) paste0(x, "%")) +
     guides(fill = guide_legend(nrow = 1)) +
     labs(title = titulo, x = xlab, y = NULL, fill = NULL) +
-    theme(legend.position = "bottom", legend.key.size = unit(3, "mm"),
-          legend.text = element_text(size = 7.5), panel.grid = element_blank())
+    theme(legend.position = "bottom", legend.key.size = unit(3.5, "mm"),
+          legend.text = element_text(size = 9), axis.text = element_text(size = 9),
+          panel.grid = element_blank())
 }

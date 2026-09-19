@@ -49,8 +49,10 @@ dataset <- ds |>
   ) |>
   collect()
 
+# Un único registro tiene cero en las cinco pruebas (PUNT_GLOBAL = 0): no refleja
+# un desempeño sino una ausencia o anulación, por lo que se excluye.
 dataset <- dataset |>
-  filter(ESTU_ESTADOINVESTIGACION == "PUBLICAR") |>
+  filter(ESTU_ESTADOINVESTIGACION == "PUBLICAR", PUNT_GLOBAL > 0) |>
   select(-ESTU_ESTADOINVESTIGACION)
 
 vars_encuesta <- dataset |>
@@ -122,7 +124,8 @@ dataset <- dataset |>
                as.Date(ESTU_FECHANACIMIENTO, tz = "America/Bogota"),
                units = "days")
     ) / 365.25,
-    EDAD = if_else(EDAD < 10 | EDAD > 100, NA_real_, EDAD)
+    # Menos de 13 años no es plausible en grado 11: se tratan como errores de digitación
+    EDAD = if_else(EDAD < 13 | EDAD > 100, NA_real_, EDAD)
   ) |>
   relocate(EDAD, .after = ESTU_FECHANACIMIENTO)
 
