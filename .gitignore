@@ -18,7 +18,7 @@ temp/
 
 # Salidas de compilacion de LaTeX
 reports/**/*.pdf
-!reports/latex_entrega_2/figuras/*.pdf
+!reports/latex_entrega_*/figuras/*.pdf
 reports/**/*.aux
 reports/**/*.bbl
 reports/**/*.bcf
@@ -35,3 +35,5 @@ reports/**/*.toc
 reports/**/*.xdv
 
 ProyectoAED.pdf
+# Intermedios de Quarto
+reports/*.rmarkdown

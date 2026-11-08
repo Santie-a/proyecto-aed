@@ -1,0 +1,861 @@
+---
+title: "Entrega 3: código del informe final"
+subtitle: "Determinantes socioeconómicos e institucionales del desempeño en las pruebas Saber 11 (2020-2)"
+author: "David Libreros, Mateo Puente, Nicolás González, Santiago Díaz"
+date: today
+lang: es
+format:
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    code-fold: false
+    embed-resources: true
+    fig-width: 8
+    fig-height: 5
+    fig-align: center
+execute:
+  warning: false
+  message: false
+---
+
+# Presentación
+
+Este `.qmd` calcula y exporta las tablas y figuras que usa el PDF generado desde
+`reports/latex_entrega_3/main.tex`, junto con las cifras que el texto cita. Las secciones 1
+y 2 reproducen el análisis descriptivo de la Entrega 2 y la sección 3 añade el análisis
+multivariado del informe final. Contiene lo que el documento usa y, como respaldo, las
+frecuencias completas de las variables cualitativas. Las tablas y figuras exportadas están
+listadas en `FIGURAS_DOC` y `TABLAS_DOC` dentro de `R/exportacion.R`.
+
+La opción `aed.entrega` decide la carpeta de destino de los artefactos, de modo que este
+archivo escribe en `latex_entrega_3` sin tocar lo que generó la Entrega 2.
+
+```{r}
+#| label: destino
+options(aed.entrega = 3)
+```
+
+# 0. Preparación y configuración
+
+## 0.1 Carga de la base
+
+`R/preparacion.R` reproduce la preparación de la Entrega 1 (con una re-selección
+de las variables): selección de las 21 columnas,
+filtros de validez y de cuestionario completo, recodificación a factores y creación de `EDAD`.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: preparacion
+#| cache: true
+source(here::here("R", "preparacion.R"))
+
+dim(dataset)
+c(cualitativas = length(vars_cuali), cuantitativas = length(vars_cuanti))
+```
+
+## 0.2 Funciones auxiliares
+
+- **`R/exportacion.R`**: rutas de salida, formato numérico en convención española y la
+  escritura de las tablas en LaTeX. Hecho con IA para automatizar el paso de tablas y
+  figuras al documento sin capturas de pantalla.
+- **`R/graficos.R`**: tema de las figuras, paleta y funciones de tablas y gráficos.
+
+El orden importa: `graficos.R` usa las funciones de formato de `exportacion.R`.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: setup
+source(here::here("R", "exportacion.R"))
+source(here::here("R", "graficos.R"))
+```
+
+# 1. Análisis descriptivo univariado
+
+## 1.1 Variables cualitativas
+
+### 1.1.1 Tabla de frecuencias
+
+Condiciones del hogar y características del establecimiento.
+Incluye las variables del planteamiento (naturaleza, zona, nivel socioeconómico) y las de
+mayor asociación con el desempeño.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: tab-frec-clave
+etiq <- c("Sin Estrato" = "Sin estrato", "No" = "No", "Si" = "Sí",
+          "OFICIAL" = "Oficial", "NO OFICIAL" = "No oficial",
+          "URBANO" = "Urbana", "RURAL" = "Rural")
+
+izq <- bloque_frec(c("FAMI_ESTRATOVIVIENDA", "FAMI_TIENEINTERNET"), etiq)
+der <- bloque_frec(c("ESTU_NSE_ESTABLECIMIENTO", "COLE_NATURALEZA",
+                     "COLE_AREA_UBICACION"), etiq)
+
+tex_tabla_doble(
+  izq, der, "tab-frec-clave",
+  "Frecuencias absolutas y relativas de las variables del hogar y del establecimiento.",
+  "tab:frec-clave",
+  titulos = c("Hogar", "Establecimiento educativo")
+)
+```
+
+### 1.1.2 Frecuencias de todas las variables cualitativas
+
+El documento solo presenta las variables de mayor relevancia para la pregunta; aquí quedan las
+tablas de frecuencias completas de las 12 cualitativas.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: frec-completas
+#| results: asis
+for (v in vars_cuali) {
+  print(knitr::kable(tabla_frec(v), digits = 2, caption = v))
+  cat("\n\n")
+}
+```
+
+### 1.1.3 Variables ordinales del estudiante y del hogar
+
+La educación de la madre se agrupa en cuatro niveles solo para la figura. En la base
+conserva sus 12 categorías.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: fig-ordinales
+educ_madre <- forcats::fct_collapse(
+  dataset$FAMI_EDUCACIONMADRE,
+  "Primaria o menos"       = c("Ninguno", "Primaria incompleta", "Primaria completa"),
+  "Secundaria"             = c("Secundaria (Bachillerato) incompleta",
+                               "Secundaria (Bachillerato) completa"),
+  "Técnica o tecnológica"  = c("Técnica o tecnológica incompleta",
+                               "Técnica o tecnológica completa"),
+  "Profesional o posgrado" = c("Educación profesional incompleta",
+                               "Educación profesional completa", "Postgrado"),
+  "No sabe / No aplica"    = c("No sabe", "No Aplica")
+)
+
+lectura <- forcats::fct_recode(
+  dataset$ESTU_DEDICACIONLECTURADIARIA,
+  "No lee" = "No leo por entretenimiento", "30 min o menos" = "30 minutos o menos",
+  "30 a 60 min" = "Entre 30 y 60 minutos", "1 a 2 h" = "Entre 1 y 2 horas",
+  "Más de 2 h" = "Más de 2 horas")
+
+trabajo <- forcats::fct_recode(
+  dataset$ESTU_HORASSEMANATRABAJA,
+  "No trabaja" = "0", "Menos de 10 h" = "Menos de 10 horas",
+  "11 a 20 h" = "Entre 11 y 20 horas", "21 a 30 h" = "Entre 21 y 30 horas",
+  "Más de 30 h" = "Más de 30 horas")
+
+libros <- forcats::fct_recode(
+  dataset$FAMI_NUMLIBROS,
+  "0 a 10" = "0 A 10 LIBROS", "11 a 25" = "11 A 25 LIBROS",
+  "26 a 100" = "26 A 100 LIBROS", "Más de 100" = "MÁS DE 100 LIBROS")
+
+exportar_fig(
+  graf_ord_apilado(lectura, "Tiempo diario de lectura por entretenimiento") /
+  graf_ord_apilado(trabajo, "Horas semanales de trabajo remunerado") /
+  graf_ord_apilado(libros,  "Número de libros en el hogar") /
+  graf_ord_apilado(educ_madre, "Nivel educativo de la madre",
+                   gris = "No sabe / No aplica"),
+  "fig-ordinales", alto = 3.4)
+```
+
+### 1.1.4 Cifras citadas en el texto
+
+Porcentajes que el documento menciona y que no aparecen directamente en la tabla ni en la
+figura: agregados de varios niveles y las variables que solo se describen en el texto.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: cifras-cuali
+pct <- \(x, nivel) round(100 * mean(x %in% nivel), 1)
+
+list(
+  estratos_1_3      = pct(dataset$FAMI_ESTRATOVIVIENDA, paste("Estrato", 1:3)),
+  estratos_5_6      = pct(dataset$FAMI_ESTRATOVIVIENDA, paste("Estrato", 5:6)),
+  nse_2_3           = pct(dataset$ESTU_NSE_ESTABLECIMIENTO, c("NSE 2", "NSE 3")),
+  lee_30_o_menos    = pct(lectura, c("No lee", "30 min o menos")),
+  trabaja_mas_20    = pct(trabajo, c("21 a 30 h", "Más de 30 h")),
+  femenino          = pct(dataset$ESTU_GENERO, "F"),
+  jornada_manana    = pct(dataset$COLE_JORNADA, "MAÑANA"),
+  noche_sabatina    = pct(dataset$COLE_JORNADA, c("NOCHE", "SABATINA")),
+  bogota_antioquia  = pct(dataset$COLE_DEPTO_UBICACION, c("BOGOTÁ", "ANTIOQUIA")),
+  deptos_menor_0.2  = sum(prop.table(table(dataset$COLE_DEPTO_UBICACION)) < 0.002)
+)
+```
+
+## 1.2 Variables cuantitativas
+
+### 1.2.1 Medidas de resumen
+
+```{r, warning=FALSE, message=FALSE}
+#| label: tbl-resumen-cuant
+res <- resumen_cuant(vars_cuanti)
+
+ETIQ <- c(EDAD = "Edad", ESTU_INSE_INDIVIDUAL = "INSE",
+          PUNT_LECTURA_CRITICA = "Lectura", PUNT_MATEMATICAS = "Matem.",
+          PUNT_C_NATURALES = "C. Nat.", PUNT_SOCIALES_CIUDADANAS = "Sociales",
+          PUNT_INGLES = "Inglés", PUNT_GLOBAL = "Global")
+
+MEDIDAS <- tibble::tribble(
+  ~clave,      ~etiqueta,                        ~dig, ~grupo,
+  "n_na",      "Datos faltantes",                   0, "Recuento",
+  "media",     "Media",                             2, "Medidas de tendencia central",
+  "mediana",   "Mediana",                           2, "Medidas de tendencia central",
+  "moda",      "Moda",                              2, "Medidas de tendencia central",
+  "minimo",    "Mínimo",                            2, "Medidas de dispersión",
+  "maximo",    "Máximo",                            2, "Medidas de dispersión",
+  "rango",     "Rango",                             2, "Medidas de dispersión",
+  "varianza",  "Varianza",                          1, "Medidas de dispersión",
+  "desv_est",  "Desviación estándar",               2, "Medidas de dispersión",
+  "cv",        "Coeficiente de variación (\\%)",    1, "Medidas de dispersión",
+  "Q1",        "Primer cuartil (Q1)",               2, "Medidas de posición y forma",
+  "Q3",        "Tercer cuartil (Q3)",               2, "Medidas de posición y forma",
+  "RIC",       "Rango intercuartílico",             2, "Medidas de posición y forma",
+  "asimetria", "Coeficiente de asimetría",          2, "Medidas de posición y forma"
+)
+
+tab_res <- purrr::pmap_dfr(MEDIDAS, function(clave, etiqueta, dig, grupo) {
+  fila <- as.list(celda(res[[clave]], dig))
+  names(fila) <- res$variable
+  c(list(medida = etiqueta), fila)
+})
+
+tex_longtable(
+  tab_res, "tbl-resumen-cuant",
+  "Medidas de tendencia central, dispersión, posición y forma de las variables cuantitativas.",
+  "tab:resumen-cuant",
+  align     = paste(c("l", rep("r", length(vars_cuanti))), collapse = " "),
+  cabeceras = c("Medida", unname(ETIQ[res$variable])),
+  grupos    = MEDIDAS$grupo,
+  tamano    = "\\tiny\\setstretch{1}\\setlength{\\tabcolsep}{4pt}",
+  nota      = sprintf("Base de %s estudiantes. La moda no se reporta en \\texttt{EDAD} ni en \\texttt{ESTU\\_INSE\\_INDIVIDUAL} por ser continuas. Los componentes se miden de 0 a 100 y el puntaje global de 0 a 500.",
+                      num(nrow(dataset), 0))
+)
+knitr::kable(tab_res)
+```
+
+### 1.2.2 Puntaje global
+
+```{r, warning=FALSE, message=FALSE}
+#| label: fig-global
+exportar_fig(graf_dist("PUNT_GLOBAL", titulo = "Puntaje global (0 a 500)",
+                       unidad = "Puntaje global"),
+             "fig-global", alto = 2.8)
+```
+
+### 1.2.3 Componentes de la prueba e índice socioeconómico
+
+```{r, warning=FALSE, message=FALSE}
+#| label: fig-componentes-inse
+COMP <- c(PUNT_LECTURA_CRITICA = "Lectura crítica", PUNT_MATEMATICAS = "Matemáticas",
+          PUNT_C_NATURALES = "C. naturales", PUNT_SOCIALES_CIUDADANAS = "Sociales",
+          PUNT_INGLES = "Inglés")
+
+largo_comp <- dataset |>
+  dplyr::select(tidyselect::all_of(names(COMP))) |>
+  tidyr::pivot_longer(everything(), names_to = "prueba", values_to = "puntaje") |>
+  dplyr::filter(!is.na(puntaje)) |>
+  dplyr::mutate(prueba = COMP[prueba])
+
+p_comp <- ggplot(largo_comp,
+                 aes(x = forcats::fct_reorder(prueba, puntaje, .fun = median),
+                     y = puntaje)) +
+  geom_boxplot(fill = AZUL, alpha = 0.55, outlier.alpha = 0.02,
+               outlier.size = 0.3, width = 0.6) +
+  stat_summary(fun = mean, geom = "point", colour = NARANJA, size = 1.6) +
+  coord_flip() +
+  labs(title = "Componentes de la prueba (0 a 100)",
+       subtitle = "El punto naranja marca la media", x = NULL, y = "Puntaje")
+
+inse <- dataset$ESTU_INSE_INDIVIDUAL[!is.na(dataset$ESTU_INSE_INDIVIDUAL)]
+p_inse <- ggplot(tibble::tibble(x = inse), aes(x)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 45, fill = AZUL,
+                 colour = "white", linewidth = 0.12) +
+  geom_density(colour = NARANJA, linewidth = 0.8) +
+  geom_vline(xintercept = mean(inse), colour = "grey20", linetype = "dashed") +
+  scale_y_continuous(labels = label_number(decimal.mark = ",")) +
+  labs(title = "Índice socioeconómico individual (INSE)",
+       subtitle = paste0("Media = ", num(mean(inse), 2), "  |  DE = ", num(sd(inse), 2)),
+       x = "INSE", y = "Densidad")
+
+exportar_fig((p_comp | p_inse) + plot_layout(widths = c(1.15, 1)),
+             "fig-componentes-inse", alto = 2.6)
+```
+
+### 1.2.4 Edad
+
+En el documento se describe con la tabla de resumen y con el percentil 99, que dimensiona la
+cola de estudiantes en extraedad.
+
+Puntajes nulos o cercanos a cero: solo un registro tenía `PUNT_GLOBAL = 0` (cero en las cinco
+pruebas) y se excluyó en `R/preparacion.R`. Los ceros en componentes aislados se conservan.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: ceros
+comp_cero <- rowSums(dataset[names(COMP)] == 0, na.rm = TRUE)
+list(registros_con_algun_cero = sum(comp_cero > 0),
+     pct = round(100 * mean(comp_cero > 0), 3),
+     ceros_por_prueba = colSums(dataset[names(COMP)] == 0, na.rm = TRUE),
+     global_min = min(dataset$PUNT_GLOBAL))
+```
+
+```{r, warning=FALSE, message=FALSE}
+#| label: edad-p99
+quantile(dataset$EDAD, 0.99, na.rm = TRUE)
+```
+
+# 2. Análisis descriptivo bivariado
+
+## 2.1 Relaciones entre variables cuantitativas
+
+Matriz de correlaciones de las 8 cuantitativas y relación entre el INSE y el puntaje global.
+Con 478.665 observaciones un diagrama de dispersión clásico produce una mancha uniforme, por
+lo que se agrupan los puntos en hexágonos y el color codifica la densidad.
+
+```{r, message=FALSE, warning=FALSE}
+#| label: fig-corr-inse
+ETIQ_CORTA <- c(EDAD = "Edad", ESTU_INSE_INDIVIDUAL = "INSE",
+                PUNT_LECTURA_CRITICA = "Lectura", PUNT_MATEMATICAS = "Matemáticas",
+                PUNT_C_NATURALES = "C. naturales", PUNT_SOCIALES_CIUDADANAS = "Sociales",
+                PUNT_INGLES = "Inglés", PUNT_GLOBAL = "Global")
+
+M <- cor(dataset[vars_cuanti], use = "pairwise.complete.obs")
+dimnames(M) <- list(ETIQ_CORTA[vars_cuanti], ETIQ_CORTA[vars_cuanti])
+
+p_corr <- graf_matriz(M, "Correlaciones de Pearson")
+
+r_inse <- cor(dataset$ESTU_INSE_INDIVIDUAL, dataset$PUNT_GLOBAL, use = "complete.obs")
+p_hex <- ggplot(dataset, aes(ESTU_INSE_INDIVIDUAL, PUNT_GLOBAL)) +
+  geom_hex(bins = 55) +
+  geom_smooth(method = "lm", formula = y ~ x, colour = NARANJA,
+              linewidth = 0.9, se = FALSE) +
+  scale_fill_gradient(low = "#DCE6EE", high = "#123D5C",
+                      labels = label_number(big.mark = ".")) +
+  labs(title = "INSE frente a puntaje global",
+       subtitle = paste0("r = ", num(r_inse, 3)),
+       x = "INSE", y = "Puntaje global", fill = "Estudiantes") +
+  theme(legend.key.width = unit(3, "mm"), legend.text = element_text(size = 8.5),
+        legend.title = element_text(size = 9))
+
+exportar_fig((p_corr | p_hex) + plot_layout(widths = c(1.1, 1)),
+             "fig-corr-inse", alto = 3.8)
+```
+
+Cifras citadas en el texto.
+
+```{r}
+#| label: cifras-cuanti
+M_comp <- M[ETIQ_CORTA[names(COMP)], ETIQ_CORTA[names(COMP)]]
+list(
+  r_inse_global    = round(r_inse, 3),
+  r2_inse_global   = round(100 * r_inse^2, 1),
+  r_inse_comp      = round(M["INSE", ETIQ_CORTA[names(COMP)]], 2),
+  r_edad_global    = round(M["Edad", "Global"], 2),
+  r_min_componentes = round(min(M_comp[lower.tri(M_comp)]), 2),
+  r_max_componentes = round(max(M_comp[lower.tri(M_comp)]), 2)
+)
+M_comp
+```
+
+## 2.2 Relaciones entre las variables cualitativas y el desempeño
+
+Puntaje global según las cuatro comparaciones del planteamiento. La educación de la madre usa
+la misma agrupación de la sección 1.1.3, con etiquetas cortas para el panel. Por eso su
+$\eta^2$ en la figura (variable agrupada) es menor que el de la tabla de asociación, que usa
+las 12 categorías originales.
+
+```{r, message=FALSE, warning=FALSE}
+#| label: fig-box-clave
+educ_corta <- forcats::fct_recode(
+  educ_madre,
+  "Primaria\no menos" = "Primaria o menos", "Secun-\ndaria" = "Secundaria",
+  "Técnica" = "Técnica o tecnológica", "Profes.\no posg." = "Profesional o posgrado",
+  "NS/NA" = "No sabe / No aplica")
+
+naturaleza <- forcats::fct_recode(dataset$COLE_NATURALEZA,
+                                  "Oficial" = "OFICIAL", "No\noficial" = "NO OFICIAL")
+area <- forcats::fct_recode(dataset$COLE_AREA_UBICACION,
+                            "Urbana" = "URBANO", "Rural" = "RURAL")
+nse <- factor(dataset$ESTU_NSE_ESTABLECIMIENTO, ordered = FALSE,
+              labels = c("1", "2", "3", "4"))
+
+exportar_fig(
+  (graf_box(nse, dataset$PUNT_GLOBAL, "NSE del colegio") |
+   graf_box(naturaleza, dataset$PUNT_GLOBAL, "Naturaleza") + labs(y = NULL) |
+   graf_box(area, dataset$PUNT_GLOBAL, "Zona") + labs(y = NULL) |
+   graf_box(educ_corta, dataset$PUNT_GLOBAL, "Educación de la madre") + labs(y = NULL)) +
+    plot_layout(widths = c(1.05, 0.75, 0.75, 1.9)),
+  "fig-box-clave", alto = 3.0)
+```
+
+Medias por grupo citadas en el texto.
+
+```{r}
+#| label: cifras-medias
+media_por <- \(g) round(tapply(dataset$PUNT_GLOBAL, g, mean), 1)
+list(
+  nse        = media_por(nse),
+  naturaleza = media_por(naturaleza),
+  area       = media_por(area),
+  educ_madre = media_por(educ_madre),
+  genero     = media_por(dataset$ESTU_GENERO),
+  de_global  = round(sd(dataset$PUNT_GLOBAL), 1)
+)
+```
+
+### 2.2.1 Asociación de cada variable con cada puntaje
+
+$\eta^2$ para las cualitativas y $r^2$ para las cuantitativas, ambas interpretables como
+proporción de la varianza del puntaje que comparte la variable. Se ordenan según el puntaje
+global.
+
+```{r}
+#| label: tab-asociacion
+puntajes <- c("PUNT_GLOBAL", names(COMP))
+
+asoc <- purrr::map_dfr(c(vars_cuali, "EDAD", "ESTU_INSE_INDIVIDUAL"), function(v) {
+  vals <- vapply(puntajes, function(p) {
+    if (v %in% vars_cuanti) cor(dataset[[v]], dataset[[p]], use = "complete.obs")^2
+    else eta2(dataset[[p]], dataset[[v]])
+  }, numeric(1))
+  tibble::tibble(variable = v, !!!as.list(100 * vals))
+}) |>
+  dplyr::arrange(dplyr::desc(PUNT_GLOBAL))
+
+tex_longtable(
+  data.frame(
+    variable = paste0("\\texttt{", tex_escape(asoc$variable), "}",
+                      ifelse(asoc$variable %in% vars_cuanti, "$^\\dagger$", "")),
+    purrr::map_dfr(asoc[puntajes], \(x) celda(x, 1))
+  ),
+  "tab-asociacion",
+  "Porcentaje de la varianza de cada puntaje asociado a cada variable, considerada de forma aislada.",
+  "tab:asociacion",
+  align     = "l r r r r r r",
+  cabeceras = c("Variable", "Global", "Lectura", "Matemáticas", "C. naturales",
+                "Sociales", "Inglés"),
+  nota      = "Se reporta $100\\,\\eta^2$ para las variables cualitativas y $100\\,r^2$ para las cuantitativas ($^\\dagger$)."
+)
+asoc
+```
+
+## 2.3 Relaciones entre variables cualitativas
+
+Matriz de $V$ de Cramér entre las 12 cualitativas y composición del nivel socioeconómico del
+colegio según su naturaleza, el par más asociado.
+
+```{r, message=FALSE, warning=FALSE}
+#| label: fig-cramer-nse
+ETIQ_CUALI <- c(ESTU_GENERO = "Género", ESTU_DEDICACIONLECTURADIARIA = "Lectura",
+                ESTU_HORASSEMANATRABAJA = "Trabajo", FAMI_ESTRATOVIVIENDA = "Estrato",
+                FAMI_EDUCACIONMADRE = "Educ. madre", FAMI_NUMLIBROS = "Libros",
+                FAMI_TIENEINTERNET = "Internet", COLE_NATURALEZA = "Naturaleza",
+                COLE_JORNADA = "Jornada", COLE_AREA_UBICACION = "Zona",
+                COLE_DEPTO_UBICACION = "Departamento", ESTU_NSE_ESTABLECIMIENTO = "NSE colegio")
+
+V <- outer(vars_cuali, vars_cuali,
+           Vectorize(\(a, b) if (a == b) 1 else cramer_v(dataset[[a]], dataset[[b]])))
+dimnames(V) <- list(ETIQ_CUALI[vars_cuali], ETIQ_CUALI[vars_cuali])
+
+# Solo se rotulan los pares con V >= 0,20; el color muestra el resto
+p_v <- graf_matriz(V, "V de Cramér entre cualitativas", limites = c(0, 0.6),
+                   colores = c("white", "#9CC0D8", "#123D5C"),
+                   min_etiqueta = 0.2, tam = 2.7)
+
+p_nse <- graf_apilado(naturaleza, dataset$ESTU_NSE_ESTABLECIMIENTO,
+                      "NSE según naturaleza") +
+  guides(fill = guide_legend(nrow = 2)) +
+  theme(plot.margin = margin(5, 12, 5, 5))
+
+exportar_fig((p_v | p_nse) + plot_layout(widths = c(2.1, 1)),
+             "fig-cramer-nse", alto = 4.8)
+```
+
+Pares citados en el texto.
+
+```{r}
+#| label: cifras-cramer
+pares <- which(upper.tri(V), arr.ind = TRUE)
+tibble::tibble(a = rownames(V)[pares[, 1]], b = colnames(V)[pares[, 2]],
+               V = round(V[pares], 3)) |>
+  dplyr::arrange(dplyr::desc(V)) |>
+  dplyr::slice_head(n = 8)
+
+round(100 * prop.table(table(naturaleza, dataset$ESTU_NSE_ESTABLECIMIENTO), 1), 1)
+```
+
+# 3. Análisis multivariado
+
+`R/preparacion_mv.R` añade las variables agrupadas que necesitan las técnicas factoriales
+(regiones, educación materna en cinco niveles, estratos 5 y 6 fundidos y edad por tramos) y
+define los bloques de variables. `R/multivariado.R` contiene el ACP, el ACM, el modelo de
+dependencia y las medidas de adecuación y supuestos.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: setup-mv
+source(here::here("R", "preparacion_mv.R"))
+source(here::here("R", "multivariado.R"))
+
+sapply(c("COLE_REGION", "FAMI_EDUCMADRE_G", "FAMI_ESTRATO_G", "EDAD_TRAMO"),
+       function(v) nlevels(dataset[[v]]))
+```
+
+Coste de cada agrupación, medido como $\eta^2$ sobre el puntaje global antes y después.
+
+```{r}
+#| label: coste-agrupacion
+data.frame(
+  original = c(eta2(dataset$PUNT_GLOBAL, dataset$COLE_DEPTO_UBICACION),
+               eta2(dataset$PUNT_GLOBAL, dataset$FAMI_EDUCACIONMADRE),
+               eta2(dataset$PUNT_GLOBAL, dataset$FAMI_ESTRATOVIVIENDA),
+               cor(dataset$EDAD, dataset$PUNT_GLOBAL, use = "complete.obs")^2),
+  agrupada = c(eta2(dataset$PUNT_GLOBAL, dataset$COLE_REGION),
+               eta2(dataset$PUNT_GLOBAL, dataset$FAMI_EDUCMADRE_G),
+               eta2(dataset$PUNT_GLOBAL, dataset$FAMI_ESTRATO_G),
+               eta2(dataset$PUNT_GLOBAL, dataset$EDAD_TRAMO)),
+  row.names = c("Departamento / región", "Educación materna",
+                "Estrato", "Edad (lineal / por tramos)")
+) |> round(4)
+```
+
+## 3.1 Componentes principales de los puntajes
+
+Los cinco puntajes comparten escala, pero se estandarizan igual para que las diferencias de
+dispersión entre pruebas no pesen en la solución.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: acp
+acp <- acp_puntajes()
+
+c(n = acp$n, KMO = round(acp$kmo$global, 3))
+round(acp$kmo$por_variable, 3)
+c(chi2 = round(acp$bartlett$chi2, 0), gl = acp$bartlett$gl,
+  p = acp$bartlett$p)
+round(acp$acp$eig, 3)
+round(acp$acp$var$cor[, 1:2], 3)
+```
+
+## 3.2 Correspondencias múltiples del contexto
+
+Nueve variables activas (las socioeconómicas e institucionales) y cuatro suplementarias
+cualitativas, más los cinco puntajes como cuantitativas suplementarias. Las inercias brutas
+del ACM subestiman la varianza explicada, así que se corrigen con Benzécri y con Greenacre.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: acm
+acm <- acm_contexto()
+
+c(n = acm$n, Q = acm$Q, J = acm$J, dimensiones = acm$J - acm$Q)
+round(cbind(autovalor = acm$acm$eig[1:5, 1], acm$inercias[1:5, ]), 3)
+```
+
+Eta cuadrado de cada variable con las dos primeras dimensiones. Las cuatro suplementarias
+quedan muy por debajo de las activas.
+
+```{r}
+#| label: eta2-dims
+round(rbind(acm$acm$var$eta2[, 1:2], acm$acm$quali.sup$eta2[, 1:2]), 4)
+```
+
+Categorías que más contribuyen a cada dimensión y proyección de los puntajes.
+
+```{r}
+#| label: contribuciones
+round(sort(acm$acm$var$contrib[, 1], decreasing = TRUE)[1:10], 2)
+round(sort(acm$acm$var$contrib[, 2], decreasing = TRUE)[1:10], 2)
+round(acm$acm$quanti.sup$coord[, 1:2], 3)
+```
+
+### 3.2.1 Plano factorial
+
+```{r, warning=FALSE, message=FALSE}
+#| label: fig-acm-plano
+#| fig-height: 4
+BLOQUE_VAR <- c(FAMI_ESTRATO_G = "Hogar", FAMI_EDUCMADRE_G = "Hogar",
+                FAMI_NUMLIBROS = "Hogar", FAMI_TIENEINTERNET = "Hogar",
+                COLE_NATURALEZA = "Colegio", COLE_JORNADA = "Colegio",
+                COLE_AREA_UBICACION = "Colegio", COLE_REGION = "Colegio",
+                ESTU_NSE_ESTABLECIMIENTO = "Colegio")
+
+ETIQ_CAT <- c("No" = "Sin internet", "Si" = "Con internet",
+              "OFICIAL" = "Oficial", "NO OFICIAL" = "No oficial",
+              "URBANO" = "Urbana", "RURAL" = "Rural",
+              "MAÑANA" = "J. mañana", "TARDE" = "J. tarde", "NOCHE" = "J. noche",
+              "UNICA" = "J. única", "COMPLETA" = "J. completa",
+              "SABATINA" = "J. sabatina",
+              "0 A 10 LIBROS" = "0-10 libros", "11 A 25 LIBROS" = "11-25 libros",
+              "26 A 100 LIBROS" = "26-100 libros",
+              "MÁS DE 100 LIBROS" = "+100 libros",
+              "Primaria o menos" = "Madre: primaria",
+              "Secundaria" = "Madre: secundaria",
+              "Técnica o tecnológica" = "Madre: técnica",
+              "Profesional o posgrado" = "Madre: profesional",
+              "No sabe o no aplica" = "Madre: no sabe")
+
+coord <- as.data.frame(acm$acm$var$coord[, 1:2])
+names(coord) <- c("d1", "d2")
+coord$categoria <- rownames(coord)
+coord$bloque <- unname(BLOQUE_VAR[acm$categorias$variable])
+coord$contrib <- acm$acm$var$contrib[, 1] + acm$acm$var$contrib[, 2]
+coord$etiqueta <- dplyr::coalesce(unname(ETIQ_CAT[coord$categoria]), coord$categoria)
+
+# La figura se inserta a media página, de modo que la letra sale a la mitad del
+# tamaño exportado. Se rotulan solo las categorías que más contribuyen para que
+# las etiquetas quepan al tamaño del resto del documento.
+coord$etiqueta[rank(-coord$contrib) > 16] <- ""
+
+inercia <- round(acm$inercias$greenacre[1:2], 1)
+
+p_plano <- ggplot(coord, aes(d1, d2, colour = bloque)) +
+  geom_hline(yintercept = 0, linewidth = 0.3, colour = "grey75") +
+  geom_vline(xintercept = 0, linewidth = 0.3, colour = "grey75") +
+  geom_point(aes(size = contrib), alpha = 0.85) +
+  ggrepel::geom_text_repel(aes(label = etiqueta), size = 3.4, max.overlaps = 30,
+                           segment.size = 0.2, min.segment.length = 0.1,
+                           box.padding = 0.3, show.legend = FALSE) +
+  scale_size_continuous(range = c(0.8, 3.4), guide = "none") +
+  scale_colour_manual(values = c(Hogar = "#1f6f8b", Colegio = "#c1663c")) +
+  labs(x = paste0("Dimensión 1 (", num(inercia[1]), " %)"),
+       y = paste0("Dimensión 2 (", num(inercia[2]), " %)"),
+       colour = NULL, title = "Plano factorial del ACM") +
+  theme(legend.position = "bottom")
+
+eta_df <- rbind(
+  data.frame(variable = rownames(acm$acm$var$eta2),
+             eta2 = acm$acm$var$eta2[, 1], tipo = "Activa"),
+  data.frame(variable = rownames(acm$acm$quali.sup$eta2),
+             eta2 = acm$acm$quali.sup$eta2[, 1], tipo = "Suplementaria")
+)
+ETIQ_VAR <- c(ESTU_NSE_ESTABLECIMIENTO = "NSE del colegio",
+              COLE_NATURALEZA = "Naturaleza", FAMI_ESTRATO_G = "Estrato",
+              FAMI_EDUCMADRE_G = "Educación madre",
+              FAMI_TIENEINTERNET = "Internet", COLE_JORNADA = "Jornada",
+              COLE_REGION = "Región", FAMI_NUMLIBROS = "Libros",
+              COLE_AREA_UBICACION = "Zona",
+              ESTU_HORASSEMANATRABAJA = "Horas de trabajo",
+              EDAD_TRAMO = "Edad", ESTU_DEDICACIONLECTURADIARIA = "Lectura",
+              ESTU_GENERO = "Género")
+eta_df$etiqueta <- unname(ETIQ_VAR[eta_df$variable])
+
+p_eta <- ggplot(eta_df, aes(eta2, reorder(etiqueta, eta2), fill = tipo)) +
+  geom_col(width = 0.72) +
+  scale_fill_manual(values = c(Activa = "#1f6f8b", Suplementaria = "#b0b7bd")) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.08))) +
+  labs(x = expression(eta^2~"con la dimensión 1"), y = NULL, fill = NULL,
+       title = "Relación con el gradiente") +
+  theme(legend.position = "bottom")
+
+exportar_fig((p_plano | p_eta) + plot_layout(widths = c(1.45, 1)),
+             "fig-acm-plano", alto = 4.2)
+```
+
+## 3.3 Modelo de dependencia
+
+Regresión lineal multivariada de los cinco puntajes. El aporte propio de cada bloque es lo
+que el modelo completo pierde al quitarlo, y la diferencia entre la suma de los $R^2$
+aislados y el $R^2$ conjunto mide cuánto se superponen.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: modelo-bloques
+bloques <- r2_por_bloques(dataset, BLOQUES)
+
+c(n = bloques$n)
+round(100 * bloques$completo, 2)
+round(100 * bloques$aislado, 2)
+round(100 * bloques$propio, 2)
+round(100 * bloques$compartida, 2)
+```
+
+El mismo modelo sustituyendo las variables del hogar y el colegio por los dos índices del
+ICFES, que resumen esa misma información.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: modelo-indices
+BLOQUES_IDX <- list(
+  individual = BLOQUES$individual,
+  indices    = VARS_INDICES,
+  colegio    = BLOQUES$colegio,
+  geografia  = BLOQUES$geografia
+)
+indices <- r2_por_bloques(dataset, BLOQUES_IDX)
+
+rbind(crudas = 100 * bloques$completo, indices = 100 * indices$completo) |> round(2)
+round(100 * indices$propio, 2)
+```
+
+### 3.3.1 Aporte de cada variable sobre el puntaje global
+
+```{r, warning=FALSE, message=FALSE}
+#| label: tab-aportes
+todas <- unlist(BLOQUES, use.names = FALSE)
+dmod <- sin_orden(droplevels(
+  dataset[complete.cases(dataset[, c(todas, "PUNT_GLOBAL")]),
+          c(todas, "PUNT_GLOBAL")]))
+
+r2_de <- function(vars) {
+  summary(lm(reformulate(vars, response = "PUNT_GLOBAL"), data = dmod))$r.squared
+}
+r2_conjunto <- r2_de(todas)
+
+aportes <- data.frame(
+  variable = todas,
+  aislado  = vapply(todas, function(v) r2_de(v), numeric(1)),
+  propio   = vapply(todas, function(v) r2_conjunto - r2_de(setdiff(todas, v)),
+                    numeric(1))
+)
+aportes$compartida <- aportes$aislado - aportes$propio
+
+ETIQ_MOD <- c(FAMI_EDUCMADRE_G = "Educación de la madre",
+              COLE_JORNADA = "Jornada del colegio", EDAD_TRAMO = "Edad",
+              FAMI_NUMLIBROS = "Libros en el hogar",
+              FAMI_TIENEINTERNET = "Acceso a internet",
+              FAMI_ESTRATO_G = "Estrato de la vivienda",
+              COLE_NATURALEZA = "Naturaleza del colegio",
+              ESTU_HORASSEMANATRABAJA = "Horas de trabajo",
+              COLE_REGION = "Región", COLE_AREA_UBICACION = "Zona del colegio",
+              ESTU_DEDICACIONLECTURADIARIA = "Dedicación a la lectura",
+              ESTU_GENERO = "Género")
+BLOQUE_DE <- unlist(lapply(names(BLOQUES), function(b)
+  setNames(rep(b, length(BLOQUES[[b]])), BLOQUES[[b]])))
+NOMBRE_BLOQUE <- c(individual = "Características individuales",
+                   hogar = "Contexto del hogar",
+                   colegio = "Establecimiento educativo",
+                   geografia = "Geografía")
+
+# Se ordena por bloque y, dentro de cada uno, por asociación aislada, para que
+# la cabecera de grupo aparezca una sola vez.
+aportes <- aportes[order(match(BLOQUE_DE[aportes$variable], names(BLOQUES)),
+                         -aportes$aislado), ]
+
+c(r2_conjunto = round(100 * r2_conjunto, 2),
+  suma_aislados = round(100 * sum(aportes$aislado), 2))
+round(100 * aportes[, -1], 3)
+
+# El guion de celda() es un signo menos tipográfico, no un guion de palabra.
+celda_pm <- function(x, dig = 2) {
+  s <- celda(x, dig)
+  ifelse(!is.na(x) & x < 0, paste0("$-$", sub("^-", "", s)), s)
+}
+
+tex_longtable(
+  data.frame(
+    variable = tex_escape(unname(ETIQ_MOD[aportes$variable])),
+    aislado = celda_pm(100 * aportes$aislado, 2),
+    propio = celda_pm(100 * aportes$propio, 2),
+    compartida = celda_pm(100 * aportes$compartida, 2)
+  ),
+  "tab-aportes",
+  paste0("Varianza del puntaje global asociada a cada variable: de forma aislada, ",
+         "aporte propio dentro del modelo conjunto y parte compartida con las demás."),
+  "tab:aportes",
+  align = "l r r r",
+  cabeceras = c("Variable", "Aislada", "Propia", "Compartida"),
+  grupos = unname(NOMBRE_BLOQUE[BLOQUE_DE[aportes$variable]]),
+  nota = paste0("Porcentajes de varianza. El modelo conjunto explica el ",
+                num(100 * r2_conjunto, 1), "\\,\\%, la suma de las asociaciones aisladas ",
+                "alcanza el ", num(100 * sum(aportes$aislado), 1),
+                "\\,\\% y la diferencia es redundancia entre variables. Una parte ",
+                "compartida negativa indica supresión.")
+)
+```
+
+### 3.3.2 Aporte propio por bloque y componente
+
+```{r, warning=FALSE, message=FALSE}
+#| label: fig-aportes
+#| fig-height: 3
+COMPONENTES <- c("Lectura", "Matemáticas", "C. Naturales", "Sociales", "Inglés")
+
+ap <- as.data.frame(as.table(100 * bloques$propio))
+names(ap) <- c("bloque", "prueba", "valor")
+ap$prueba <- factor(COMPONENTES[as.integer(ap$prueba)], levels = COMPONENTES)
+ap$bloque <- factor(unname(NOMBRE_BLOQUE[as.character(ap$bloque)]),
+                    levels = unname(NOMBRE_BLOQUE))
+
+p_ap <- ggplot(ap, aes(valor, forcats::fct_rev(bloque), fill = prueba)) +
+  geom_col(position = position_dodge(width = 0.78), width = 0.72) +
+  scale_fill_brewer(palette = "BuPu", direction = -1) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.06))) +
+  labs(x = "Aporte propio en puntos de varianza explicada", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom")
+
+exportar_fig(p_ap, "fig-aportes", alto = 2.9)
+```
+
+## 3.4 Verificación de supuestos
+
+Esta sección queda preparada para que se redacte el apartado 6 del documento. Cada bloque
+imprime una sola cosa y lleva encima la frase que dice qué es.
+
+La adecuación muestral del ACP (KMO global, KMO por variable y esfericidad de Bartlett) no está
+aquí sino en la sección 3.1, junto al análisis que la necesita.
+
+Base de trabajo de esta sección: los registros completos en las doce explicativas, los cinco
+puntajes y los dos índices del ICFES. `mod` es el modelo multivariado con las doce explicativas.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: supuestos-base
+dsup <- sin_orden(droplevels(
+  dataset[complete.cases(dataset[, c(todas, VARS_PUNTAJES, VARS_INDICES,
+                                     "PUNT_GLOBAL")]),
+          c(todas, VARS_PUNTAJES, VARS_INDICES, "PUNT_GLOBAL")]))
+
+mod <- ajustar_modelo(dsup, todas)
+c(observaciones = nrow(dsup))
+```
+
+**Multicolinealidad.** Factores de inflación de varianza generalizados. El primer cuadro usa las
+doce explicativas del modelo y el segundo añade los dos índices del ICFES, que es donde cabe
+esperar redundancia. Con factores se lee `vif_eq`, comparable con el VIF corriente.
+
+```{r, warning=FALSE, message=FALSE}
+#| label: supuestos-vif
+round(colinealidad(dsup, todas), 3)
+round(colinealidad(dsup, c(todas, VARS_INDICES)), 3)
+```
+
+**Normalidad.** Asimetría y curtosis de los residuos de cada componente. Con $n$ del orden de
+$10^5$ las pruebas formales rechazan cualquier desviación, así que se describen los momentos.
+
+```{r}
+#| label: supuestos-normalidad
+round(forma_residuos(mod), 3)
+```
+
+**Homocedasticidad.** Desviación estándar de los residuos de Lectura Crítica por decil del valor
+ajustado. Si el supuesto se sostiene, los diez valores son parecidos entre sí.
+
+```{r}
+#| label: supuestos-homocedasticidad
+res <- residuals(mod)[, 1]
+aju <- fitted(mod)[, 1]
+round(tapply(res, cut(aju, quantile(aju, 0:10 / 10), include.lowest = TRUE,
+                      labels = 1:10), sd), 3)
+```
+
+**Contraste conjunto.** MANOVA de tipo II con el estadístico de Pillai, el más robusto ante
+desviaciones de la normalidad multivariada. Con esta cantidad de registros la significancia no
+informa, de modo que lo que se lee es el tamaño del estadístico.
+
+```{r}
+#| label: supuestos-manova
+car::Manova(mod, type = "II")
+```
+
+**Linealidad.** Media del puntaje global por decil del índice socioeconómico, y comparación del
+$r^2$ lineal con el $\eta^2$ de la versión discretizada. Si la relación es lineal, los dos
+valores quedan cerca y las medias por decil suben de forma pareja.
+
+```{r}
+#| label: supuestos-linealidad
+dec <- cut(dsup$ESTU_INSE_INDIVIDUAL,
+           quantile(dsup$ESTU_INSE_INDIVIDUAL, 0:10 / 10),
+           include.lowest = TRUE, labels = 1:10)
+round(tapply(dsup$PUNT_GLOBAL, dec, mean), 1)
+c(r2_lineal = round(cor(dsup$ESTU_INSE_INDIVIDUAL, dsup$PUNT_GLOBAL)^2, 4),
+  eta2_deciles = round(eta2(dsup$PUNT_GLOBAL, dec), 4))
+```
+
+**Independencia.** No se cumple y no hay nada que calcular. Los estudiantes están anidados en
+colegios y la base publicada no trae identificador de establecimiento, así que no se puede
+estimar un modelo multinivel ni agrupar los errores estándar. El efecto es que los errores
+estándar quedan subestimados, lo que no afecta a los $R^2$ ni a los tamaños de efecto, que es
+sobre lo que se apoya la lectura del documento.
+
+**El ACM** no exige supuestos distribucionales, solo frecuencias suficientes por categoría, que
+es lo que garantiza la agrupación descrita en la sección 3.2.

@@ -12,7 +12,12 @@
 
 library(here)
 
-DIR_TEX <- here::here("reports", "latex_entrega_2")
+# La entrega de destino se fija con options(aed.entrega = 3) antes de cargar
+# este archivo. Por defecto escribe en la carpeta de la Entrega 2, de modo que
+# reports/Entrega 2.qmd sigue funcionando sin cambios.
+ENTREGA <- getOption("aed.entrega", 2)
+
+DIR_TEX <- here::here("reports", paste0("latex_entrega_", ENTREGA))
 DIR_FIG <- file.path(DIR_TEX, "figuras")
 DIR_TAB <- file.path(DIR_TEX, "tablas")
 for (d in c(DIR_FIG, DIR_TAB)) dir.create(d, recursive = TRUE, showWarnings = FALSE)
@@ -21,10 +26,23 @@ for (d in c(DIR_FIG, DIR_TAB)) dir.create(d, recursive = TRUE, showWarnings = FA
 # Exportar a esta medida hace que la letra de las figuras salga al tamaño previsto.
 ANCHO <- 6.5
 
-FIGURAS_DOC <- c("fig-ordinales", "fig-global", "fig-componentes-inse",
-                 "fig-corr-inse", "fig-box-clave", "fig-cramer-nse")
+# Cada entrega exporta solo los flotantes que su main.tex realmente incluye. El
+# .qmd calcula y muestra todo el análisis, pero exportar lo que el documento no
+# usa deja archivos huérfanos en la carpeta de LaTeX.
+FIGURAS_POR_ENTREGA <- list(
+  "2" = c("fig-ordinales", "fig-global", "fig-componentes-inse",
+          "fig-corr-inse", "fig-box-clave", "fig-cramer-nse"),
+  "3" = c("fig-global", "fig-corr-inse", "fig-box-clave", "fig-acm-plano",
+          "fig-aportes")
+)
 
-TABLAS_DOC <- c("tab-frec-clave", "tbl-resumen-cuant", "tab-asociacion")
+TABLAS_POR_ENTREGA <- list(
+  "2" = c("tab-frec-clave", "tbl-resumen-cuant", "tab-asociacion"),
+  "3" = c("tab-asociacion", "tab-aportes")
+)
+
+FIGURAS_DOC <- FIGURAS_POR_ENTREGA[[as.character(ENTREGA)]]
+TABLAS_DOC  <- TABLAS_POR_ENTREGA[[as.character(ENTREGA)]]
 
 options(scipen = 999)
 
@@ -111,7 +129,7 @@ tex_longtable <- function(df, archivo, caption, label, align, cabeceras,
 
   # El contenido de un flotante se compone más tarde, así que los ajustes de
   # tamaño tienen que ir dentro del entorno y no envolviéndolo.
-  L <- "% Generado por R/exportacion.R desde reports/Entrega 2.qmd"
+  L <- sprintf("%% Generado por R/exportacion.R desde reports/Entrega %s.qmd", ENTREGA)
 
   if (larga) {
     L <- c(L,
@@ -177,7 +195,7 @@ tex_tabla_doble <- function(izq, der, archivo, caption, label,
   filas <- paste0("  ", a, " & ", b, " \\\\")
 
   cab <- "\\textbf{Categoría} & \\textbf{n} & \\textbf{\\%}"
-  L <- c("% Generado por R/exportacion.R desde reports/Entrega 2.qmd",
+  L <- c(sprintf("%% Generado por R/exportacion.R desde reports/Entrega %s.qmd", ENTREGA),
     sprintf("\\begingroup%s", tamano),
     "\\par",
     "\\noindent\\begin{minipage}{\\textwidth}",

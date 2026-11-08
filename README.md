@@ -41,6 +41,7 @@ la parte de `R`. En este mismo folder están los LaTeX separados por carpeta:
 
 - [Entrega 1](reports/latex_entrega_1/)
 - [Entrega 2](reports/latex_entrega_2/)
+- [Entrega 3](reports/latex_entrega_3/)
 
 ## Scripts de R
 
@@ -53,4 +54,12 @@ El código que no hace parte de la exposición de las entregas vive en [`R/`](R)
   (tablas) y `.pdf`/`.png` (figuras) que consume el LaTeX.
 - `graficos.R` - tema visual y funciones reutilizables de tabla y gráfico, univariadas y
   bivariadas. Depende de `exportacion.R`.
+- `preparacion_mv.R` - preparación adicional de la Entrega 3. Agrupa las categorías poco
+  frecuentes (regiones, educación materna, estratos, tramos de edad) y deja definidos
+  `VARS_ACM`, `VARS_ACM_SUP`, `VARS_PUNTAJES`, `BLOQUES` y `VARS_INDICES`. No toca las
+  columnas originales, de modo que la Entrega 2 se sigue reproduciendo igual.
+- `multivariado.R` - funciones del ACP, del ACM y del modelo de dependencia, con sus
+  medidas de adecuación y de supuestos (`kmo`, `bartlett_esfericidad`, `acp_puntajes`,
+  `inercias_corregidas`, `acm_contexto`, `ajustar_modelo`, `colinealidad`,
+  `forma_residuos`). Depende de `preparacion_mv.R`.
 - `download.R` y `to_parquet.R` — obtención y conversión de la base.
