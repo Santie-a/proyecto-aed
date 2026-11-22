@@ -417,9 +417,29 @@ asoc <- purrr::map_dfr(c(vars_cuali, "EDAD", "ESTU_INSE_INDIVIDUAL"), function(v
 }) |>
   dplyr::arrange(dplyr::desc(PUNT_GLOBAL))
 
+# Las mismas etiquetas legibles que usa la tabla de aportes, para que el documento
+# no mezcle nombres en código con nombres en prosa.
+ETIQ_TABLA <- c(
+  ESTU_NSE_ESTABLECIMIENTO     = "NSE del colegio",
+  ESTU_INSE_INDIVIDUAL         = "Índice socioeconómico (INSE)",
+  FAMI_EDUCACIONMADRE          = "Educación de la madre",
+  COLE_JORNADA                 = "Jornada del colegio",
+  FAMI_NUMLIBROS               = "Libros en el hogar",
+  FAMI_TIENEINTERNET           = "Acceso a internet",
+  FAMI_ESTRATOVIVIENDA         = "Estrato de la vivienda",
+  COLE_DEPTO_UBICACION         = "Departamento del colegio",
+  COLE_NATURALEZA              = "Naturaleza del colegio",
+  EDAD                         = "Edad",
+  ESTU_HORASSEMANATRABAJA      = "Horas de trabajo",
+  COLE_AREA_UBICACION          = "Zona del colegio",
+  ESTU_DEDICACIONLECTURADIARIA = "Dedicación a la lectura",
+  ESTU_GENERO                  = "Género")
+
+stopifnot(all(asoc$variable %in% names(ETIQ_TABLA)))
+
 tex_longtable(
   data.frame(
-    variable = paste0("\\texttt{", tex_escape(asoc$variable), "}",
+    variable = paste0(tex_escape(unname(ETIQ_TABLA[asoc$variable])),
                       ifelse(asoc$variable %in% vars_cuanti, "$^\\dagger$", "")),
     purrr::map_dfr(asoc[puntajes], \(x) celda(x, 1))
   ),

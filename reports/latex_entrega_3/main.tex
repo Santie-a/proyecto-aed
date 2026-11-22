@@ -74,7 +74,7 @@
 
 % Formato APA 7 para la lista de referencias.
 \setlength{\bibhang}{0.5in}
-\AtBeginBibliography{\setstretch{2}}
+\AtBeginBibliography{\setstretch{1.15}}
 
 % Compatibilidad con longtable de TeX Live 2025: evita diagnósticos espurios
 % de contracción infinita al dividir tablas entre varias páginas.
@@ -117,7 +117,7 @@
   Santiago Díaz}
 \newcommand{\portadaProfesora}{Luz Adriana Pineda Barón}
 \newcommand{\portadaFecha}{\today}
-\newcommand{\portadaSemestre}{Segundo semestre académico}
+\newcommand{\portadaSemestre}{Semestre 2026-2}
 
 \begin{document}
 
@@ -197,6 +197,8 @@ cuarto, identificar cuáles de esas variables presentan un mayor grado de asocia
 de manera conjunta, medido mediante tamaños de efecto y varianza compartida, y en qué medida esa
 asociación se superpone entre ellas.
 
+\vspace{0.1cm}
+
 \section{Revisión bibliográfica}
 
 La literatura relaciona el rendimiento académico con el contexto individual, familiar y
@@ -208,6 +210,8 @@ cercano a la pandemia, \textcite{quintero2025} comparan los resultados de 2019-2
 encuentran una ampliación de las brechas entre colegios urbanos y rurales, y entre oficiales y
 privados. Esta investigación amplía esos antecedentes mediante un enfoque
 multivariado que las examina de manera conjunta en lugar de aislada.
+
+\vspace{0.1cm}
 
 \section{Marco metodológico y descripción de los datos}
 \label{sec:metodologia}
@@ -228,14 +232,14 @@ La base original contiene 504.872 observaciones y 81 variables. Primero se exclu
 identificadores y las variables constantes, redundantes o de pertinencia limitada, y después se
 conservaron 12 de las 32 cualitativas restantes según su asociación con los puntajes ($\eta^2$) y
 su redundancia con otras variables ($V$ de Cramér) y con el índice socioeconómico. El análisis trabaja así con 20 variables, 12 cualitativas y 8 cuantitativas,
-descritas en la Tabla~\ref{tab:variables} (Anexo~\ref{anexo:variables}).
+descritas en la Tabla~\ref{tab:variables} de la Sección~\ref{anexo:variables}.
 
 \subsection{Preparación de la base de datos}
 \label{sec:preparacion}
 
 No se hallaron registros duplicados. Se descartaron los 44 registros cuya validez está
 condicionada a una actuación administrativa del ICFES, uno con cero en las cinco pruebas y 267
-edades (0,056\,\%) fuera del rango plausible de 13 a 100 años, mientras que los 257 con cero en
+edades fuera del rango plausible de 13 a 100 años, el 0,05\,\% de la base original, mientras que los 257 con cero en
 una prueba aislada se conservaron por tener puntajes válidos en las demás. Los faltantes se concentran en
 las seis preguntas socioeconómicas, entre el 2,7 y el 3,4\,\%, y se clasificaron como pérdida
 aleatoria condicional, o missing at random, pues la no respuesta se relaciona con menor puntaje
@@ -244,6 +248,8 @@ brechas estimadas probablemente están algo subestimadas. Se conservaron los reg
 en esas preguntas, que tras los filtros suman 478.665 observaciones, base de todo el análisis. Las
 variables categóricas se recodificaron como factores respetando el orden de las ordinales, dejando
 \texttt{NO SABE}, \texttt{NO APLICA} y \texttt{SIN ESTRATO} fuera de la escala.
+
+\vspace{0.1cm}
 
 \section{Análisis descriptivo y exploratorio}
 \label{sec:descriptivo}
@@ -355,6 +361,8 @@ inexistente entre los oficiales, donde el 61{,}9\,\% está en NSE 2. Estas super
 la agenda del análisis multivariado, que consiste en cuantificar el aporte propio de cada
 dimensión y examinar la estructura conjunta del desempeño y del contexto.
 
+\vspace{0.1cm}
+
 \section{Metodología estadística}
 \label{sec:met-estadistica}
 
@@ -362,9 +370,10 @@ dimensión y examinar la estructura conjunta del desempeño y del contexto.
 
 La elección de las técnicas parte de tres rasgos del problema. La respuesta no es una variable
 sino un vector de cinco puntajes continuos que correlacionan entre 0,59 y 0,78, y el puntaje
-global no puede acompañarlos por ser un promedio ponderado de ellos. Once de las doce
-explicativas son cualitativas y la única continua es el índice socioeconómico individual. Y el
-diseño es observacional sobre la población completa, de modo que el objetivo es cuantificar
+global no puede acompañarlos por ser un promedio ponderado de ellos. Las doce explicativas del
+modelo son cualitativas, pues la edad entra por tramos, y el índice socioeconómico individual, el
+único predictor continuo, solo interviene en la especificación alternativa. Y el diseño es
+observacional sobre la población completa, de modo que el objetivo es cuantificar
 asociaciones y no efectos causales. Quedan así fuera la clasificación supervisada,
 porque no hay una variable de grupo que predecir, y el agrupamiento, porque el interés no está en
 segmentar estudiantes sino en medir relaciones entre bloques definidos de antemano.
@@ -405,39 +414,62 @@ lineal y el $\eta^2$ por tramos, del 9,4\,\%, duplica el $r^2$ de la versión co
 ordinales se reexpresaron con contrastes de tratamiento, que no alteran el $R^2$ y permiten leer
 cada categoría frente a una de referencia.
 
+\vspace{0.1cm}
+
 \section{Verificación de supuestos}
 \label{sec:supuestos}
 
-% -----------------------------------------------------------------------------
-% PENDIENTE. Esta sección corresponde a otro integrante del grupo.
-%
-% Las cifras ya están calculadas en reports/Entrega 3.qmd (y en reports/Entrega 3.html,
-% que se puede leer sin ejecutar nada). Cada bloque lleva encima la frase que dice qué es.
-%
-% En la sección 3.1 del .qmd:
-%   - Adecuación muestral del ACP: KMO global, KMO por variable y prueba de esfericidad
-%     de Bartlett con chi cuadrado, grados de libertad y valor p.
-%
-% En la sección 3.4 del .qmd:
-%   - Multicolinealidad: factores de inflación de varianza generalizados (car::vif), con
-%     y sin los índices del ICFES. Con factores se lee la columna vif_eq.
-%   - Normalidad: asimetría y curtosis de los residuos de cada componente.
-%   - Homocedasticidad: desviación estándar de los residuos por decil del valor ajustado.
-%   - Contraste conjunto: MANOVA de tipo II con el estadístico de Pillai.
-%   - Linealidad: media del puntaje global por decil del INSE, r^2 frente a eta^2.
-%   - Independencia: no se cumple y no hay nada que calcular. Los estudiantes están
-%     anidados en colegios y la base no trae identificador de establecimiento.
-%
-% El ACM no exige supuestos distribucionales, solo frecuencias suficientes por categoría,
-% que es lo que garantiza la agrupación descrita en la Sección 5.2.
-% -----------------------------------------------------------------------------
+Los supuestos se verificaron para cada técnica con sus propias variables: la adecuación muestral del
+ACP, con los cinco puntajes, y los supuestos de la regresión, con las doce
+variables explicativas del modelo. Con una muestra de este tamaño las pruebas
+formales rechazan cualquier desviación, por lo que se evalúan magnitudes (KMO, VIF, momentos de los
+residuos) y no valores $p$ (Tabla~\ref{tab:supuestos}).
+
+\begin{table}[H]
+  \centering
+  \caption{Verificación de los supuestos de la regresión y del ACP.}
+  \label{tab:supuestos}
+  \footnotesize\setstretch{1}\setlength{\tabcolsep}{4pt}
+  \begin{tabular}{P{4.8cm} P{7.4cm} P{2.8cm}}
+    \toprule
+    \textbf{Supuesto y qué exige} & \textbf{Evidencia (criterio)} & \textbf{Veredicto} \\
+    \midrule
+    \textbf{Correlación entre los puntajes (ACP)}: los puntajes comparten información suficiente
+    para resumirse en pocos componentes & KMO de 0{,}885, con 0{,}858 a 0{,}936 por variable (criterio: mayor que 0{,}5);
+    Bartlett significativo, aunque poco informativo con este $n$ & \textbf{Cumple} \\
+    \textbf{Multicolinealidad}: las explicativas no son redundantes entre sí & GVIF$^{1/\mathrm{gl}}$,
+    equivalente al VIF para predictores con varios grados de libertad, entre 1{,}02 y 1{,}68, con
+    máximo de 4{,}48 al añadir los índices del ICFES (criterio: menor que 5) &
+    \textbf{Cumple} \\
+    \textbf{Normalidad}: los residuos tienen forma de campana & Asimetría de 0{,}03 a 0{,}18 y
+    curtosis de 0{,}15 a 0{,}62; en Inglés, 0{,}62 y 1{,}31 (criterio: valores cercanos a 0) &
+    \textbf{Cumple}, con desviación leve en Inglés (cola derecha) \\
+    \textbf{Homocedasticidad}: el error tiene dispersión constante & Desviación estándar de los
+    residuos por decil del valor ajustado entre 8{,}11 y 8{,}98 (criterio: dispersión similar) &
+    \textbf{Cumple} \\
+    \textbf{Linealidad} (INSE): cada punto de INSE suma un puntaje constante & $r^2 = 0{,}204$ frente a
+    $\eta^2 = 0{,}203$ de los deciles (criterio: valores casi iguales) & \textbf{Cumple} \\
+    \textbf{Independencia}: los errores de distintos estudiantes no se relacionan & Estudiantes
+    anidados en colegios, estructura que el modelo no incorpora. El identificador del
+    establecimiento existe en la base publicada, pero se excluyó al seleccionar variables &
+    \textbf{No cumple}: errores estándar subestimados, $R^2$ y tamaños de efecto intactos \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+El ACM no estima un modelo de dependencia y solo exige frecuencias suficientes por categoría, lo que
+garantiza la agrupación de la Sección~\ref{sec:met-estadistica}. En conjunto, los supuestos se cumplen
+salvo la independencia y una leve desviación de la normalidad en Inglés, sin que esto invalide una
+lectura basada en tamaños de efecto.
+
+\vspace{0.1cm}
 
 \section{Aplicación de la metodología}
 \label{sec:aplicacion}
 
 \subsection{Estructura del desempeño}
 
-El análisis de componentes principales sobre los cinco puntajes, con los 478.445 registros
+El análisis de componentes principales, con los 478.445 registros que tienen los cinco puntajes
 completos, encuentra una estructura marcadamente unidimensional. La
 primera componente recoge el 74,7\,\% de la varianza y la segunda el 9,2\,\%, y las cinco pruebas
 cargan positivamente y con intensidad parecida sobre el primer eje, entre 0,790 en Inglés y 0,897
@@ -449,10 +481,11 @@ los cinco puntajes y no solo el global, porque un resumen único borraría esa d
 \subsection{Estructura del contexto}
 
 El análisis de correspondencias múltiples se calculó con nueve variables activas que aportan 37
-categorías y generan 28 dimensiones, sobre 478.171 registros. Las inercias brutas reparten la
-variación entre muchos ejes, de modo que el primero recoge apenas el 11,7\,\% del total, pero una
-vez corregido el sesgo de la codificación disyuntiva ese eje concentra el 73,6\,\% de la inercia
-según Greenacre, o el 83,5\,\% con Benzécri.
+categorías y generan 28 dimensiones, sobre los 478.171 registros completos también en las
+suplementarias. Las inercias brutas reparten la variación entre muchos ejes, de modo que el
+primer eje recoge en bruto apenas el
+11,7\,\% del total, pero una vez corregido el sesgo de la codificación disyuntiva concentra el
+73,6\,\% de la inercia según Greenacre, o el 83,5\,\% con Benzécri.
 
 \begin{figure}[H]
   \centering
@@ -524,93 +557,95 @@ aislado al 1,7\,\% propio. Sobre el puntaje global, las doce variables explican 
 Esa superposición no se manifiesta como colinealidad entre predictores, sino como la porción de
 varianza del puntaje que cada variable comparte con las demás, visible solo al descomponer el
 $R^2$. El género ilustra el caso contrario, ya que su asociación aislada es del 0,52\,\% y su
-aporte propio del 0,91\,\%, una parte compartida negativa que indica supresión porque su efecto
-se invierte entre áreas. La comparación entre las dos representaciones del nivel socioeconómico
+aporte propio del 0,91\,\%, una parte compartida negativa que indica supresión. El mecanismo está
+en su relación con las demás explicativas, pues los hombres trabajan más horas y leen menos,
+rasgos asociados a puntajes bajos que enmascaran parte de su ventaja, de modo que la brecha sube
+de 7,0 a 9,6 puntos al controlar el resto del modelo. La comparación entre las dos representaciones del nivel socioeconómico
 favorece a los índices del ICFES, pues sustituir las cuatro preguntas crudas del hogar por el
 índice individual y el nivel del establecimiento eleva el $R^2$ de los cinco componentes, de 29,6
 a 33,4\,\% en Inglés.
 
+\vspace{0.1cm}
+
 \section{Discusión de resultados}
 \label{sec:discusion}
 
-Los resultados coinciden con la literatura revisada en la dirección y el orden de magnitud de las
-asociaciones. \textcite{garciagil2021} y \textcite{morales2024} reportan una relación positiva y
-moderada entre las condiciones socioeconómicas familiares y el rendimiento, que aquí se refleja
-en el 20,4\,\% de varianza del puntaje global asociado al índice socioeconómico individual y en
-las brechas de 0,61 y 0,52 desviaciones estándar entre naturalezas y entre zonas de colegio. A
-esa coincidencia este trabajo añade que una brecha apreciable entre dos grupos muy desbalanceados
-se traduce en una varianza explicada pequeña, del 3,8\,\% en el caso de la zona.
+Los resultados coinciden con la literatura en la dirección de las asociaciones. La relación entre
+condiciones socioeconómicas familiares y rendimiento que reportan \textcite{garciagil2021} y
+\textcite{morales2024} se refleja en el 20,4\,\% de varianza del puntaje global asociado al índice
+socioeconómico individual y en brechas de 0,61 y 0,52 desviaciones estándar entre naturalezas y
+zonas de colegio, aunque una brecha entre grupos muy desbalanceados puede explicar poca varianza,
+como el 3,8\,\% de la zona.
 
-El aporte más claro frente a los antecedentes tiene que ver con la redundancia. Los estudios
-citados examinan los factores de manera separada o por pares, y la descomposición del $R^2$
-muestra que esa lectura sobrestima el peso independiente de cada uno por un factor cercano a dos
-y medio, además de alterar el orden, dado que la educación de la madre encabeza las asociaciones
-aisladas y queda en una posición modesta al descontar lo compartido. La explicación la ofrece el
-análisis de correspondencias, porque el contexto familiar y el institucional colapsan en un
-gradiente único. Con la segregación escolar que muestra la $V$ de Cramér de 0,54 entre naturaleza
-y nivel socioeconómico del establecimiento, las variables del colegio transportan buena parte de
-la información del hogar y a la inversa.
+El principal aporte es cuantificar la redundancia. Examinar los factores por separado, como hacen
+los estudios citados, sobrestima su peso independiente por un factor cercano a seis, pues las
+asociaciones aisladas suman el 80,2\,\% de la varianza del puntaje global frente al 13,5\,\% que
+suman los aportes propios. También altera el orden, pues la educación de la madre pasa de
+encabezar las asociaciones aisladas a una posición modesta. La causa es que hogar y colegio colapsan en un único gradiente en el ACM y, con la
+segregación escolar ($V = 0{,}54$ entre naturaleza y NSE del establecimiento), las variables de uno
+transportan buena parte de la información del otro.
 
-El estudio respalda además el índice de \textcite{cruz2016}, justificado en su momento por razones
-conceptuales y de medición, ya que sustituirlo por las preguntas crudas del hogar reduce el $R^2$
-de los cinco componentes. Frente a \textcite{quintero2025}, que encuentran una ampliación de las
-brechas urbano-rural y oficial-privada entre 2019-2 y 2021-2, este análisis confirma su existencia
-pero no puede pronunciarse sobre su evolución, porque trabaja con un único corte transversal. Sí
-añade que ambas brechas no son independientes entre sí ni del contexto del hogar, de manera que
-interpretarlas como efectos separados del sistema escolar resulta cuestionable.
+El estudio respalda el índice de \textcite{cruz2016}, propuesto por razones conceptuales y de
+medición, ya que sustituirlo por las preguntas crudas del hogar reduce el $R^2$ de los cinco
+componentes. Confirma también las brechas urbano-rural y oficial-privada de \textcite{quintero2025},
+sin poder evaluar su ampliación entre 2019-2 y 2021-2 por ser un único corte, y muestra que no son
+independientes entre sí ni del hogar, por lo que no conviene leerlas como efectos separados del
+sistema escolar.
 
-Dos hallazgos no tenían antecedente directo en la literatura revisada. El primero es que las
-características individuales presentan asociaciones aisladas débiles y a la vez resultan casi
-ortogonales al gradiente socioeconómico, por lo que son una fuente de variación propia y no un
-reflejo del contexto. El segundo es el comportamiento de Inglés, que las componentes principales
-aíslan en un segundo eje y que registra a la vez el mayor $R^2$ del modelo y la mayor proyección
-sobre el gradiente, lo que apunta a una dependencia mayor de la exposición adquirida fuera de la
-escuela. Todo lo anterior describe asociaciones y no efectos causales.
+Dos hallazgos carecen de antecedente directo. Las características individuales, de asociación
+débil, son casi ortogonales al gradiente socioeconómico y aportan variación propia. Inglés se aísla
+en el segundo eje del ACP y tiene el mayor $R^2$ y la mayor proyección sobre el gradiente, lo que
+sugiere mayor dependencia de la exposición fuera de la escuela. Todo lo anterior describe
+asociaciones, no efectos causales.
+
+\vspace{0.1cm}
 
 \section{Conclusiones}
 \label{sec:conclusiones}
 
-% -----------------------------------------------------------------------------
-% PENDIENTE. Esta sección corresponde a otro integrante del grupo.
-% La guía pide entre cuatro y seis conclusiones que respondan la pregunta de
-% investigación, se relacionen con los objetivos específicos y se sustenten en la
-% evidencia obtenida, sin introducir resultados nuevos.
-%
-% ESPACIO DISPONIBLE. El límite son 10 páginas contadas, sin portada, declaración
-% de uso de IA, anexo ni referencias, con 0,5 puntos de penalización por página o
-% fracción de exceso. El texto escrito hasta aquí llega al pie de la página 9, de
-% modo que entre esta sección, las dos siguientes y la 6 quedan algo menos de dos
-% páginas. Conviene compilar y mirar dónde cae la declaración de uso de IA, que
-% debe empezar como muy tarde en la página 12 del PDF.
-% -----------------------------------------------------------------------------
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
+  \item Las características individuales, familiares, institucionales y geográficas se asocian de forma relevante pero parcial con el desempeño, pues explican entre el 25,0 y el 29,6\,\% de la varianza de cada componente y el 33,0\,\% del puntaje global, dejando sin explicar cerca de dos tercios de este último.
+
+  \item Respecto al segundo y tercer objetivo, el contexto socioeconómico es el factor más asociado. El NSE del colegio (21,1\,\%) y el índice individual (20,4\,\%) encabezan las asociaciones con el puntaje global, y el hogar (15,4 a 21,8\,\%) y el establecimiento (12,4 a 16,7\,\%) son los bloques más asociados en los cinco componentes, en línea con las brechas entre colegios no oficiales y oficiales (271,9 frente a 242,6 puntos) y entre urbanos y rurales (253,3 frente a 228,0).
+
+  \item Respecto al cuarto objetivo, la conclusión central es que ese peso no es independiente. Hogar y colegio forman un gradiente único que concentra el 73,6\,\% de la inercia del ACM, por lo que las asociaciones aisladas suman el 80,2\,\% frente al 33,0\,\% conjunto, y al descontar lo compartido el aporte propio del hogar cae a entre 3,9 y 6,7 puntos y el del establecimiento a entre 2,0 y 2,8. No pueden leerse como efectos separados.
+
+  \item Respecto al primer objetivo, las características individuales (edad, trabajo, lectura y género) pesan menos que el contexto, pero conservan un aporte propio de 2,9 a 5,2 puntos y, al ser casi ortogonales al gradiente, son una fuente de variación distinta.
+
+  \item Un factor general recoge el 74,7\,\% de la varianza de los puntajes, pero Inglés se separa en un segundo eje y tiene la mayor varianza explicada (29,6\,\%), lo que justifica analizar cada prueba y no solo el puntaje global.
+\end{enumerate}
+
+\vspace{0.1cm}
 
 \section{Limitaciones del estudio}
 \label{sec:limitaciones}
 
-% -----------------------------------------------------------------------------
-% PENDIENTE. Esta sección corresponde a otro integrante del grupo.
-%
-% El análisis ya dejó identificadas varias, por si sirven de punto de partida:
-%   - Diseño observacional, de modo que todo lo reportado son asociaciones y no
-%     efectos causales (Secciones 3.1, 5.1 y 8).
-%   - Independencia no satisfecha. Los estudiantes están anidados en colegios y la
-%     base no trae identificador de establecimiento (Sección 3.4 del .qmd).
-%   - Un único corte transversal, 2020-2, que impide hablar de evolución en el
-%     tiempo (Sección 8).
-%   - Pérdida no aleatoria del 2,7 al 3,4 % en las preguntas socioeconómicas, que
-%     subestima ligeramente las brechas (Sección 3.2).
-%   - Agrupación de categorías poco frecuentes, con el costo en eta^2 cuantificado
-%     en la Sección 5.2.
-%   - Efecto Guttman en el segundo eje del ACM (Sección 7.2).
-% -----------------------------------------------------------------------------
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
+  \item El diseño observacional y de un único corte (2020-2) solo permite describir asociaciones, no efectos causales ni la evolución de las brechas.
+
+  \item El modelo explica el 33{,}0\,\% de la varianza del puntaje global, y cerca de dos tercios responden a factores no registrados, como el desempeño previo o la calidad de la enseñanza.
+
+  \item Los estudiantes están anidados en colegios y el modelo no incorpora esa estructura, lo que viola la independencia y subestima los errores estándar, sin afectar los $R^2$ ni los tamaños de efecto. El identificador del establecimiento existe en la base publicada, así que la limitación es del alcance del análisis y no de los datos.
+
+  \item La no respuesta socioeconómica no fue completamente aleatoria, por lo que las brechas probablemente están algo subestimadas. La agrupación de categorías para las técnicas factoriales restó algo de detalle (el $\eta^2$ de la geografía bajó de 6{,}8 a 4{,}6\,\%), y el modelo supone efectos aditivos entre bloques.
+\end{enumerate}
+
+\vspace{0.1cm}
 
 \section{Recomendaciones}
 \label{sec:recomendaciones}
 
-% -----------------------------------------------------------------------------
-% PENDIENTE. Esta sección corresponde a otro integrante del grupo.
-% La guía pide que se deriven de las limitaciones identificadas.
-% -----------------------------------------------------------------------------
+Estas recomendaciones se derivan de las limitaciones anteriores:
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
+  \item Frente a la falta de independencia, la misma base permite recuperar el identificador del establecimiento (\texttt{COLE\_CODIGO\_ICFES}) para agrupar los errores estándar por colegio o ajustar un modelo multinivel, que separaría la variación entre colegios de la existente dentro de cada uno y respondería cuánto del gradiente socioeconómico corresponde al hogar y cuánto al entorno escolar.
+  
+  \item Para superar el corte transversal, se podría replicar el análisis con otras aplicaciones de Saber 11, como 2019-2 y 2021-2, y comprobar si el gradiente y su redundancia se mantienen en el tiempo, incorporando variables hoy ausentes como el desempeño previo.
+  
+  \item Frente a la no respuesta, la imputación múltiple permitiría contrastar los resultados con los de casos completos y medir cuánto se subestiman las brechas.
+  
+  \item Incluir interacciones entre bloques, por ejemplo entre naturaleza y zona del colegio, permitiría evaluar el supuesto de aditividad.
+\end{enumerate}
 
 \newpage
 
@@ -619,13 +654,24 @@ Se usaron herramientas de Inteligencia Artificial (IA) para el desarrollo de est
 depurar código, automatizar cosas como exportar tablas y figuras a \LaTeX, manejo de pipelines, definir estilos para mantener consistencia,
 documentación sobre el uso de herramientas como Quarto y R, replantear enfoques o decisiones posiblemente erróneas y revisar
 el documento contra la guía de la entrega para verificar que cumpliera sus requisitos.
-En general se buscó con estas herramientas elevar la calidad del trabajo, manteniendo estructuralmente el criterio personal.
+En general se buscó con estas herramientas elevar la calidad del trabajo. La interpretación de los
+resultados, las conclusiones y las decisiones metodológicas fueron realizadas por el grupo.
 
 Entre las herramientas utilizadas se encuentran:
 \begin{itemize}
   \item Claude (Opus 5)
   \item OpenAI Prism
 \end{itemize}
+
+\vspace{0.1cm}
+
+\section{Participación del grupo}
+
+Santiago Díaz realizó el planteamiento de los modelos, su ejecución y el análisis, Mateo Puente
+el póster y la parte introductoria del documento, David Libreros la verificación de supuestos y
+las conclusiones, y Nicolás González las limitaciones y las recomendaciones.
+
+\vspace{0.1cm}
 
 \section{Variables seleccionadas}
 \label{anexo:variables}
@@ -698,6 +744,8 @@ Entre las herramientas utilizadas se encuentran:
 \end{longtable}
 \endgroup
 \noindent{\footnotesize Los puntajes y el INSE se tratan como escalas de intervalo porque su cero no indica ausencia del atributo. \texttt{EDAD} es la única variable derivada.\par}
+
+\vspace{0.1cm}
 
 \printbibliography[title={Referencias}]
 
